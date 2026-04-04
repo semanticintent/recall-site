@@ -7,6 +7,6 @@
     "build": "recall build src/ --out public/"
   },
   "dependencies": {
-    "@semanticintent/recall": "0.3.10"
+    "@semanticintent/recall": "0.3.11"
   }
 }
