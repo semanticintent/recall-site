@@ -63,30 +63,27 @@ PROCEDURE DIVISION.
 
    RENDER-HERO.
       DISPLAY SECTION ID "hero"
-         WITH LAYOUT SPLIT
+         WITH LAYOUT CENTERED
          WITH PADDING LARGE
          WITH STYLE GRID-BG.
+         DISPLAY LABEL "THE CASE FOR COBOL ON THE WEB".
+         DISPLAY HEADING-1 HERO-HEAD
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH HERO-SUB.
+         DISPLAY BUTTON CTA-DOCS
+            ON-CLICK GOTO "/docs.html"
+            WITH STYLE PRIMARY.
+         DISPLAY BUTTON CTA-GITHUB
+            ON-CLICK GOTO "https://github.com/semanticintent/recall"
+            WITH STYLE GHOST.
+      STOP SECTION.
 
-         DISPLAY SECTION ID "hero-left"
-            WITH LAYOUT STACK.
-            DISPLAY LABEL "THE CASE FOR COBOL ON THE WEB".
-            DISPLAY HEADING-1 HERO-HEAD
-               WITH STYLE MONO.
-            DISPLAY PARAGRAPH HERO-SUB.
-            DISPLAY BUTTON CTA-DOCS
-               ON-CLICK GOTO "/docs.html"
-               WITH STYLE PRIMARY.
-            DISPLAY BUTTON CTA-GITHUB
-               ON-CLICK GOTO "https://github.com/semanticintent/recall"
-               WITH STYLE GHOST.
-         STOP SECTION.
-
-         DISPLAY SECTION ID "hero-right"
-            WITH LAYOUT STACK.
-            DISPLAY CODE-BLOCK HERO-CODE
-               WITH LANGUAGE "cobol".
-         STOP SECTION.
-
+   RENDER-HERO-CODE.
+      DISPLAY SECTION ID "hero-code"
+         WITH LAYOUT CENTERED
+         WITH PADDING SMALL.
+         DISPLAY CODE-BLOCK HERO-CODE
+            WITH LANGUAGE "cobol".
       STOP SECTION.
 
    RENDER-AI.
