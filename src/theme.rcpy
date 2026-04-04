@@ -6,7 +6,7 @@ ENVIRONMENT DIVISION.
    PALETTE SECTION.
       COLOR-BG      #080808.
       COLOR-TEXT     #f0f0f0.
-      COLOR-MUTED    #888888.
+      COLOR-MUTED    #aaaaaa.
       COLOR-ACCENT   #00ff41.
       COLOR-BORDER   #2a2a2a.
    FONT SECTION.
