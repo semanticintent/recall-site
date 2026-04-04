@@ -1,0 +1,136 @@
+IDENTIFICATION DIVISION.
+   PROGRAM-ID.    RECALL-HOME.
+   AUTHOR.        SEMANTICINTENT.
+   DATE-WRITTEN.  2026-04-04.
+   PAGE-TITLE.    "RECALL — The Source That Remembers".
+   DESCRIPTION.   "A declarative web interface language with COBOL-inspired syntax. The source is the artifact.".
+   FAVICON.       "/favicon.ico".
+
+ENVIRONMENT DIVISION.
+   COPY FROM "theme.rcpy".
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 HERO-HEAD      PIC X(30)  VALUE "STILL HERE.".
+      01 HERO-SUB       PIC X(30)  VALUE "STILL RUNNING.".
+      01 HERO-BODY      PIC X(240) VALUE "RECALL is a declarative web interface language with COBOL-inspired syntax. It transpiles .rcl source files to self-contained, zero-dependency HTML. Every compiled page embeds its own origin.".
+      01 CTA-DOCS       PIC X(20)  VALUE "READ THE DOCS".
+      01 CTA-GITHUB     PIC X(20)  VALUE "VIEW ON GITHUB".
+      01 INSTALL-CMD    PIC X(44)  VALUE "npm install -g @semanticintent/recall".
+      01 SECTION-WHY    PIC X(30)  VALUE "Why COBOL syntax?".
+      01 SECTION-PRIN   PIC X(30)  VALUE "What RECALL believes.".
+      01 SECTION-START  PIC X(30)  VALUE "Start in 30 seconds.".
+
+   ITEMS SECTION.
+      01 WHY-ITEMS.
+         05 WHY-1.
+            10 PROJ-TITLE PIC X(50)  VALUE "SEMANTIC INTENT BY CONSTRUCTION.".
+            10 PROJ-DESC  PIC X(200) VALUE "COBOL has been encoding business intent in plain English since 1959. Every .rcl file is a semantic document. The intent is visible — not hidden behind it.".
+            10 PROJ-TAG   PIC X(20)  VALUE "SINCE 1959".
+            10 PROJ-HREF  PIC X(80)  VALUE "/docs.html".
+         05 WHY-2.
+            10 PROJ-TITLE PIC X(50)  VALUE "BUILT FOR THE AI COLLABORATION LOOP.".
+            10 PROJ-DESC  PIC X(200) VALUE "HTML has no grammar. RECALL's constrained syntax makes AI output predictable, round-trippable, and auditable. Ask for a page. Get back valid .rcl. Compile. Done.".
+            10 PROJ-TAG   PIC X(20)  VALUE "AI-NATIVE".
+            10 PROJ-HREF  PIC X(80)  VALUE "/docs.html".
+         05 WHY-3.
+            10 PROJ-TITLE PIC X(50)  VALUE "THE SOURCE RECALLS ITS ORIGIN.".
+            10 PROJ-DESC  PIC X(200) VALUE "View source on any RECALL page and you will see COBOL divisions. Every compiled .html embeds its .rcl source in a comment block. The output remembers where it came from.".
+            10 PROJ-TAG   PIC X(20)  VALUE "CORE PRINCIPLE".
+            10 PROJ-HREF  PIC X(80)  VALUE "/docs.html".
+
+      01 PRINCIPLE-ITEMS.
+         05 P-1.
+            10 PROJ-TITLE PIC X(50)  VALUE "THE SOURCE IS THE ARTIFACT".
+            10 PROJ-DESC  PIC X(200) VALUE "Every compiled .html file embeds its .rcl source. View source = see origin.".
+            10 PROJ-TAG   PIC X(20)  VALUE "CORE".
+            10 PROJ-HREF  PIC X(80)  VALUE "/docs.html#principles".
+         05 P-2.
+            10 PROJ-TITLE PIC X(50)  VALUE "ZERO DEPENDENCIES".
+            10 PROJ-DESC  PIC X(200) VALUE "One HTML file. Inline CSS. Vanilla JS where needed. No CDN. No framework.".
+            10 PROJ-TAG   PIC X(20)  VALUE "CONSTRAINT".
+            10 PROJ-HREF  PIC X(80)  VALUE "/docs.html#principles".
+         05 P-3.
+            10 PROJ-TITLE PIC X(50)  VALUE "VERBOSE IS A FEATURE".
+            10 PROJ-DESC  PIC X(200) VALUE "COBOL's verbosity is intentional legibility. A .rcl file reads like a structured document.".
+            10 PROJ-TAG   PIC X(20)  VALUE "PHILOSOPHY".
+            10 PROJ-HREF  PIC X(80)  VALUE "/docs.html#principles".
+         05 P-4.
+            10 PROJ-TITLE PIC X(50)  VALUE "LEGACY FORWARD".
+            10 PROJ-DESC  PIC X(200) VALUE "COBOL systems from the 1960s still run payroll. RECALL asks: what if web languages were designed to last?".
+            10 PROJ-TAG   PIC X(20)  VALUE "STATEMENT".
+            10 PROJ-HREF  PIC X(80)  VALUE "/docs.html#principles".
+
+PROCEDURE DIVISION.
+
+   RENDER-NAV.
+      COPY FROM "components/nav.rcpy".
+
+   RENDER-HERO.
+      DISPLAY SECTION ID "hero"
+         WITH LAYOUT CENTERED
+         WITH PADDING LARGE.
+         DISPLAY LABEL "COBOL-INSPIRED WEB INTERFACE LANGUAGE".
+         DISPLAY HEADING-1 HERO-HEAD
+            WITH STYLE MONO.
+         DISPLAY HEADING-2 HERO-SUB
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH HERO-BODY.
+         DISPLAY BUTTON CTA-DOCS
+            ON-CLICK GOTO "/docs.html"
+            WITH STYLE PRIMARY.
+         DISPLAY BUTTON CTA-GITHUB
+            ON-CLICK GOTO "https://github.com/semanticintent/recall"
+            WITH STYLE GHOST.
+         DISPLAY DIVIDER
+            WITH SPACING SMALL.
+         DISPLAY CODE-BLOCK INSTALL-CMD
+            WITH LANGUAGE "bash".
+      STOP SECTION.
+
+   RENDER-WHY.
+      DISPLAY SECTION ID "why"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "WHY COBOL".
+         DISPLAY HEADING-2 SECTION-WHY
+            WITH STYLE MONO.
+         DISPLAY CARD-LIST USING WHY-ITEMS
+            WITH STYLE BORDERED
+            WITH COLUMNS 3
+            WITH HOVER-LIFT YES.
+      STOP SECTION.
+
+   RENDER-PRINCIPLES.
+      DISPLAY SECTION ID "principles"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "DESIGN PRINCIPLES".
+         DISPLAY HEADING-2 SECTION-PRIN
+            WITH STYLE MONO.
+         DISPLAY CARD-LIST USING PRINCIPLE-ITEMS
+            WITH STYLE BORDERED
+            WITH COLUMNS 2
+            WITH HOVER-LIFT YES.
+      STOP SECTION.
+
+   RENDER-START.
+      DISPLAY SECTION ID "start"
+         WITH LAYOUT CENTERED
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "GET STARTED".
+         DISPLAY HEADING-2 SECTION-START
+            WITH STYLE MONO.
+         DISPLAY CALLOUT "RECALL requires Node.js 18 or later."
+            WITH TYPE NOTE.
+         DISPLAY CODE-BLOCK INSTALL-CMD
+            WITH LANGUAGE "bash".
+         DISPLAY BUTTON CTA-DOCS
+            ON-CLICK GOTO "/docs.html"
+            WITH STYLE PRIMARY.
+      STOP SECTION.
+
+   RENDER-FOOTER.
+      COPY FROM "components/footer.rcpy".
+
+   STOP RUN.

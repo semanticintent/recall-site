@@ -1,0 +1,262 @@
+IDENTIFICATION DIVISION.
+   PROGRAM-ID.    RECALL-DOCS.
+   AUTHOR.        SEMANTICINTENT.
+   DATE-WRITTEN.  2026-04-04.
+   PAGE-TITLE.    "RECALL Documentation".
+   DESCRIPTION.   "The complete RECALL language reference — divisions, elements, copybooks, and CLI.".
+   FAVICON.       "/favicon.ico".
+
+ENVIRONMENT DIVISION.
+   COPY FROM "theme.rcpy".
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 INTRO-BODY     PIC X(240) VALUE "RECALL is a declarative web interface language with COBOL-inspired syntax. It transpiles .rcl source files to self-contained, zero-dependency HTML files. Every compiled page embeds its .rcl source in an HTML comment block.".
+      01 DIVISIONS-BODY PIC X(240) VALUE "Every RECALL program is divided into exactly five divisions, declared in order. This structure is borrowed directly from COBOL — explicit, readable, and non-negotiable.".
+      01 COPY-BODY      PIC X(240) VALUE "RECALL copybooks use the .rcpy extension — a deliberate reference to COBOL's .cpy format. Copybooks are never compiled standalone. They exist only to be COPY FROM'd into .rcl programs at compile time.".
+      01 CLI-BODY       PIC X(240) VALUE "The RECALL CLI provides three commands. All commands operate on files with the .rcl extension. Copybooks (.rcpy) are resolved automatically during compilation.".
+      01 INSTALL-CMD    PIC X(44)  VALUE "npm install -g @semanticintent/recall".
+      01 COMPILE-CMD    PIC X(40)  VALUE "recall compile my-site.rcl".
+      01 COMPILE-OUT    PIC X(50)  VALUE "recall compile my-site.rcl --out dist/".
+      01 BUILD-CMD      PIC X(40)  VALUE "recall build src/ --out public/".
+      01 CHECK-CMD      PIC X(30)  VALUE "recall check my-site.rcl".
+      01 EXAMPLE-RCL    PIC X(400) VALUE "IDENTIFICATION DIVISION.   PROGRAM-ID. MY-SITE.   PAGE-TITLE. Hello World.ENVIRONMENT DIVISION.   COPY FROM theme.rcpy.DATA DIVISION.   WORKING-STORAGE SECTION.   01 HEADING PIC X(20) VALUE Hello World.PROCEDURE DIVISION.   RENDER.   DISPLAY SECTION ID hero WITH LAYOUT CENTERED WITH PADDING LARGE.   DISPLAY HEADING-1 HEADING WITH STYLE MONO.   STOP SECTION.   STOP RUN.".
+
+   ITEMS SECTION.
+      01 DIVISION-REF.
+         05 ROW-1.
+            10 COL-DIV  PIC X(30) VALUE "IDENTIFICATION DIVISION".
+            10 COL-REQ  PIC X(10) VALUE "REQUIRED".
+            10 COL-DESC PIC X(100) VALUE "Program metadata — PROGRAM-ID, PAGE-TITLE, AUTHOR, DESCRIPTION, FAVICON.".
+         05 ROW-2.
+            10 COL-DIV  PIC X(30) VALUE "ENVIRONMENT DIVISION".
+            10 COL-REQ  PIC X(10) VALUE "REQUIRED".
+            10 COL-DESC PIC X(100) VALUE "Theme and configuration — COLOR-MODE, VIEWPORT, PALETTE, FONT. Supports COPY FROM for theme inheritance.".
+         05 ROW-3.
+            10 COL-DIV  PIC X(30) VALUE "DATA DIVISION".
+            10 COL-REQ  PIC X(10) VALUE "REQUIRED".
+            10 COL-DESC PIC X(100) VALUE "Content and variables — WORKING-STORAGE for scalars, ITEMS for hierarchical group data.".
+         05 ROW-4.
+            10 COL-DIV  PIC X(30) VALUE "COMPONENT DIVISION".
+            10 COL-REQ  PIC X(10) VALUE "OPTIONAL".
+            10 COL-DESC PIC X(100) VALUE "Custom element definitions — DEFINE, ACCEPTS, END DEFINE. Components are expanded at compile time.".
+         05 ROW-5.
+            10 COL-DIV  PIC X(30) VALUE "PROCEDURE DIVISION".
+            10 COL-REQ  PIC X(10) VALUE "REQUIRED".
+            10 COL-DESC PIC X(100) VALUE "Render logic — named sections containing DISPLAY statements. Ends with STOP RUN.".
+
+      01 ELEMENT-REF.
+         05 ROW-1.
+            10 COL-NAME PIC X(20) VALUE "HEADING-1/2/3".
+            10 COL-ARGS PIC X(40) VALUE "value WITH STYLE MONO/SANS".
+            10 COL-DESC PIC X(100) VALUE "Heading at level 1, 2 or 3.".
+         05 ROW-2.
+            10 COL-NAME PIC X(20) VALUE "PARAGRAPH".
+            10 COL-ARGS PIC X(40) VALUE "value WITH COLOR MUTED/TEXT/ACCENT".
+            10 COL-DESC PIC X(100) VALUE "Body paragraph text.".
+         05 ROW-3.
+            10 COL-NAME PIC X(20) VALUE "LABEL".
+            10 COL-ARGS PIC X(40) VALUE "value".
+            10 COL-DESC PIC X(100) VALUE "Small uppercase label, used as section eyebrow.".
+         05 ROW-4.
+            10 COL-NAME PIC X(20) VALUE "CODE-BLOCK".
+            10 COL-ARGS PIC X(40) VALUE "value WITH LANGUAGE bash/cobol/html".
+            10 COL-DESC PIC X(100) VALUE "Monospace code block with language hint.".
+         05 ROW-5.
+            10 COL-NAME PIC X(20) VALUE "BUTTON".
+            10 COL-ARGS PIC X(40) VALUE "value ON-CLICK GOTO href WITH STYLE PRIMARY/GHOST/OUTLINE".
+            10 COL-DESC PIC X(100) VALUE "Clickable link styled as a button.".
+         05 ROW-6.
+            10 COL-NAME PIC X(20) VALUE "CARD-LIST".
+            10 COL-ARGS PIC X(40) VALUE "USING group WITH COLUMNS 2/3 WITH HOVER-LIFT YES".
+            10 COL-DESC PIC X(100) VALUE "Grid of cards rendered from an ITEMS group.".
+         05 ROW-7.
+            10 COL-NAME PIC X(20) VALUE "TABLE".
+            10 COL-ARGS PIC X(40) VALUE "USING group WITH HEADERS col1, col2".
+            10 COL-DESC PIC X(100) VALUE "Bordered reference table from ITEMS data.".
+         05 ROW-8.
+            10 COL-NAME PIC X(20) VALUE "CALLOUT".
+            10 COL-ARGS PIC X(40) VALUE "value WITH TYPE NOTE/TIP/WARNING/DANGER".
+            10 COL-DESC PIC X(100) VALUE "Highlighted callout block with typed accent color.".
+         05 ROW-9.
+            10 COL-NAME PIC X(20) VALUE "TABS".
+            10 COL-ARGS PIC X(40) VALUE "USING group".
+            10 COL-DESC PIC X(100) VALUE "Interactive tabbed panels. Each ITEMS group is one tab.".
+         05 ROW-10.
+            10 COL-NAME PIC X(20) VALUE "NAVIGATION".
+            10 COL-ARGS PIC X(40) VALUE "USING group WITH LOGO text WITH STICKY YES".
+            10 COL-DESC PIC X(100) VALUE "Top navigation bar with logo and links.".
+         05 ROW-11.
+            10 COL-NAME PIC X(20) VALUE "SIDEBAR-NAV".
+            10 COL-ARGS PIC X(40) VALUE "USING group WITH LOGO text WITH STICKY YES".
+            10 COL-DESC PIC X(100) VALUE "Sidebar navigation. Only valid inside LAYOUT SIDEBAR.".
+         05 ROW-12.
+            10 COL-NAME PIC X(20) VALUE "SECTION".
+            10 COL-ARGS PIC X(40) VALUE "ID id WITH LAYOUT CENTERED/STACK/GRID/SIDEBAR WITH PADDING SMALL/MEDIUM/LARGE".
+            10 COL-DESC PIC X(100) VALUE "Layout container. Supports nesting for SIDEBAR layout.".
+         05 ROW-13.
+            10 COL-NAME PIC X(20) VALUE "DIVIDER".
+            10 COL-ARGS PIC X(40) VALUE "WITH STYLE DASHED WITH SPACING SMALL/LARGE".
+            10 COL-DESC PIC X(100) VALUE "Horizontal rule.".
+         05 ROW-14.
+            10 COL-NAME PIC X(20) VALUE "BANNER".
+            10 COL-ARGS PIC X(40) VALUE "value".
+            10 COL-DESC PIC X(100) VALUE "Full-width accent banner.".
+         05 ROW-15.
+            10 COL-NAME PIC X(20) VALUE "IMAGE".
+            10 COL-ARGS PIC X(40) VALUE "WITH SRC url WITH ALT text WITH SIZE FULL/HALF".
+            10 COL-DESC PIC X(100) VALUE "Image element.".
+         05 ROW-16.
+            10 COL-NAME PIC X(20) VALUE "LINK".
+            10 COL-ARGS PIC X(40) VALUE "value WITH HREF url WITH TARGET BLANK".
+            10 COL-DESC PIC X(100) VALUE "Inline anchor link.".
+
+      01 CLI-TABS.
+         05 TAB-COMPILE.
+            10 TAB-LABEL   PIC X(20) VALUE "compile".
+            10 TAB-CONTENT PIC X(200) VALUE "recall compile <file.rcl>
+recall compile <file.rcl> --out <dir>
+
+Transpiles a single .rcl file to a self-contained HTML file.
+Output defaults to the same directory as the source.".
+            10 TAB-LANG    PIC X(10) VALUE "bash".
+         05 TAB-BUILD.
+            10 TAB-LABEL   PIC X(20) VALUE "build".
+            10 TAB-CONTENT PIC X(200) VALUE "recall build <dir>
+recall build <dir> --out <outdir>
+
+Compiles all .rcl files in a directory recursively.
+Mirrors source directory structure in output (default: public/).
+Copybooks (.rcpy) are skipped automatically.".
+            10 TAB-LANG    PIC X(10) VALUE "bash".
+         05 TAB-CHECK.
+            10 TAB-LABEL   PIC X(20) VALUE "check".
+            10 TAB-CONTENT PIC X(200) VALUE "recall check <file.rcl>
+
+Validates .rcl syntax without producing output.
+Reports missing PROGRAM-ID, PAGE-TITLE, or empty PROCEDURE DIVISION.".
+            10 TAB-LANG    PIC X(10) VALUE "bash".
+
+      01 DOCS-NAV.
+         05 NAV-SECTION-1.
+            10 GROUP-LABEL     PIC X(30) VALUE "OVERVIEW".
+            10 NAV-LINK-1      PIC X(30) VALUE "Introduction".
+            10 NAV-LINK-1-HREF PIC X(80) VALUE "#intro".
+            10 NAV-LINK-2      PIC X(30) VALUE "Quick Start".
+            10 NAV-LINK-2-HREF PIC X(80) VALUE "#quickstart".
+         05 NAV-SECTION-2.
+            10 GROUP-LABEL     PIC X(30) VALUE "LANGUAGE".
+            10 NAV-LINK-1      PIC X(30) VALUE "Divisions".
+            10 NAV-LINK-1-HREF PIC X(80) VALUE "#divisions".
+            10 NAV-LINK-2      PIC X(30) VALUE "Elements".
+            10 NAV-LINK-2-HREF PIC X(80) VALUE "#elements".
+            10 NAV-LINK-3      PIC X(30) VALUE "Copybooks".
+            10 NAV-LINK-3-HREF PIC X(80) VALUE "#copybooks".
+            10 NAV-LINK-4      PIC X(30) VALUE "Components".
+            10 NAV-LINK-4-HREF PIC X(80) VALUE "#components".
+         05 NAV-SECTION-3.
+            10 GROUP-LABEL     PIC X(30) VALUE "CLI".
+            10 NAV-LINK-1      PIC X(30) VALUE "recall compile".
+            10 NAV-LINK-1-HREF PIC X(80) VALUE "#cli".
+            10 NAV-LINK-2      PIC X(30) VALUE "recall build".
+            10 NAV-LINK-2-HREF PIC X(80) VALUE "#cli".
+            10 NAV-LINK-3      PIC X(30) VALUE "recall check".
+            10 NAV-LINK-3-HREF PIC X(80) VALUE "#cli".
+         05 NAV-SECTION-4.
+            10 GROUP-LABEL     PIC X(30) VALUE "PROJECT".
+            10 NAV-LINK-1      PIC X(30) VALUE "GitHub".
+            10 NAV-LINK-1-HREF PIC X(80) VALUE "https://github.com/semanticintent/recall".
+            10 NAV-LINK-2      PIC X(30) VALUE "npm".
+            10 NAV-LINK-2-HREF PIC X(80) VALUE "https://www.npmjs.com/package/@semanticintent/recall".
+
+PROCEDURE DIVISION.
+
+   RENDER-NAV.
+      COPY FROM "components/nav.rcpy".
+
+   RENDER-LAYOUT.
+      DISPLAY SECTION ID "docs-layout"
+         WITH LAYOUT SIDEBAR
+         WITH PADDING NONE.
+
+         DISPLAY SIDEBAR-NAV USING DOCS-NAV
+            WITH LOGO "RECALL DOCS"
+            WITH STICKY YES.
+
+         DISPLAY SECTION ID "intro"
+            WITH LAYOUT STACK
+            WITH PADDING LARGE.
+            DISPLAY LABEL "OVERVIEW".
+            DISPLAY HEADING-1 "Introduction"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH INTRO-BODY.
+            DISPLAY CALLOUT "RECALL is not a framework, runtime, or templating engine. It is a compiler. Source in. HTML out."
+               WITH TYPE NOTE.
+            DISPLAY DIVIDER.
+            DISPLAY HEADING-2 "Quick Start"
+               WITH STYLE MONO.
+            DISPLAY CODE-BLOCK INSTALL-CMD
+               WITH LANGUAGE "bash".
+            DISPLAY CODE-BLOCK COMPILE-CMD
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "That is it. No config. No build step. Open the .html file directly."
+               WITH TYPE TIP.
+         STOP SECTION.
+
+      STOP SECTION.
+
+   RENDER-DIVISIONS.
+      DISPLAY SECTION ID "divisions"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "LANGUAGE".
+         DISPLAY HEADING-2 "Divisions"
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH DIVISIONS-BODY.
+         DISPLAY TABLE USING DIVISION-REF
+            WITH HEADERS "DIVISION, REQUIRED, DESCRIPTION".
+         DISPLAY CALLOUT "Divisions must appear in order: IDENTIFICATION, ENVIRONMENT, DATA, COMPONENT, PROCEDURE. Omitting COMPONENT DIVISION is allowed."
+            WITH TYPE WARNING.
+      STOP SECTION.
+
+   RENDER-ELEMENTS.
+      DISPLAY SECTION ID "elements"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "LANGUAGE".
+         DISPLAY HEADING-2 "Elements"
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH "RECALL provides 16 built-in elements. All are invoked with DISPLAY inside a PROCEDURE DIVISION section.".
+         DISPLAY TABLE USING ELEMENT-REF
+            WITH HEADERS "ELEMENT, ARGUMENTS, DESCRIPTION".
+      STOP SECTION.
+
+   RENDER-COPYBOOKS.
+      DISPLAY SECTION ID "copybooks"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "LANGUAGE".
+         DISPLAY HEADING-2 "Copybooks"
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH COPY-BODY.
+         DISPLAY CODE-BLOCK "COPY FROM components/nav.rcpy."
+            WITH LANGUAGE "cobol".
+         DISPLAY CALLOUT "Copybooks (.rcpy) are excluded from recall build automatically. Only .rcl files are compiled."
+            WITH TYPE TIP.
+      STOP SECTION.
+
+   RENDER-CLI.
+      DISPLAY SECTION ID "cli"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "CLI".
+         DISPLAY HEADING-2 "Command reference"
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH CLI-BODY.
+         DISPLAY TABS USING CLI-TABS.
+      STOP SECTION.
+
+   RENDER-FOOTER.
+      COPY FROM "components/footer.rcpy".
+
+   STOP RUN.
