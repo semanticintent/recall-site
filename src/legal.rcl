@@ -1,0 +1,129 @@
+IDENTIFICATION DIVISION.
+   PROGRAM-ID.    RECALL-LEGAL.
+   AUTHOR.        SEMANTICINTENT.
+   DATE-WRITTEN.  2026-04-04.
+   PAGE-TITLE.    "RECALL — Legal & Terms".
+   DESCRIPTION.   "Terms of use, MIT license, privacy, and the source embedding principle.".
+   FAVICON.       "/favicon.ico".
+
+ENVIRONMENT DIVISION.
+   COPY FROM "theme.rcpy".
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 LICENSE-BODY    PIC X(240) VALUE "RECALL is free and open source software released under the MIT License. You may use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the software without restriction.".
+      01 WARRANTY-BODY   PIC X(240) VALUE "THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. THE AUTHORS ARE NOT LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM USE OF THE SOFTWARE.".
+      01 EMBED-BODY      PIC X(240) VALUE "RECALL's core principle is that every compiled `.html` file embeds its `.rcl` source in an HTML comment block. This is intentional by design — not a bug, not a leak. You own your source. RECALL preserves its origin.".
+      01 PRIVACY-BODY    PIC X(240) VALUE "This website does not use cookies, analytics, or tracking scripts. It is a static site served by Cloudflare Pages. Cloudflare may collect standard access logs as part of their infrastructure. No personal data is collected or stored by RECALL.".
+      01 FONTS-BODY      PIC X(240) VALUE "This site loads IBM Plex Mono and IBM Plex Sans from Google Fonts. Google's standard privacy policy applies to those requests. No other third-party resources are loaded.".
+      01 ATTR-BODY       PIC X(240) VALUE "Attribution is not required by the MIT license. If you build something with RECALL and want to mention it, a `built with RECALL` note is appreciated — but entirely optional.".
+      01 MIT-TEXT        PIC X(600) VALUE "Copyright 2026 semanticintent\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the Software), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.".
+
+   ITEMS SECTION.
+      01 LICENSE-SUMMARY.
+         05 ROW-1.
+            10 COL-TERM   PIC X(30) VALUE "Use commercially".
+            10 COL-VALUE  PIC X(10) VALUE "YES".
+            10 COL-NOTE   PIC X(80) VALUE "No restrictions on commercial use or distribution.".
+         05 ROW-2.
+            10 COL-TERM   PIC X(30) VALUE "Modify".
+            10 COL-VALUE  PIC X(10) VALUE "YES".
+            10 COL-NOTE   PIC X(80) VALUE "Fork it, extend it, build on it.".
+         05 ROW-3.
+            10 COL-TERM   PIC X(30) VALUE "Distribute".
+            10 COL-VALUE  PIC X(10) VALUE "YES".
+            10 COL-NOTE   PIC X(80) VALUE "Ship it in your own projects and products.".
+         05 ROW-4.
+            10 COL-TERM   PIC X(30) VALUE "Include license".
+            10 COL-VALUE  PIC X(10) VALUE "REQUIRED".
+            10 COL-NOTE   PIC X(80) VALUE "Keep the copyright notice in copies or substantial portions.".
+         05 ROW-5.
+            10 COL-TERM   PIC X(30) VALUE "Warranty".
+            10 COL-VALUE  PIC X(10) VALUE "NONE".
+            10 COL-NOTE   PIC X(80) VALUE "Provided as-is. No liability for damages.".
+         05 ROW-6.
+            10 COL-TERM   PIC X(30) VALUE "Attribution".
+            10 COL-VALUE  PIC X(10) VALUE "OPTIONAL".
+            10 COL-NOTE   PIC X(80) VALUE "Not required. Appreciated if you want to.".
+
+PROCEDURE DIVISION.
+
+   RENDER-NAV.
+      COPY FROM "components/nav.rcpy".
+
+   RENDER-HERO.
+      DISPLAY SECTION ID "hero"
+         WITH LAYOUT CENTERED
+         WITH PADDING LARGE.
+         DISPLAY LABEL "LEGAL AND TERMS".
+         DISPLAY HEADING-1 "Open. Free. No surprises."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH "RECALL is MIT licensed. This page documents what that means, how the site works, and the source embedding principle.".
+      STOP SECTION.
+
+   RENDER-LICENSE.
+      DISPLAY SECTION ID "license"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "SOFTWARE LICENSE".
+         DISPLAY HEADING-2 "MIT License"
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH LICENSE-BODY.
+         DISPLAY TABLE USING LICENSE-SUMMARY
+            WITH HEADERS "PERMISSION, STATUS, NOTES".
+         DISPLAY CODE-BLOCK MIT-TEXT.
+      STOP SECTION.
+
+   RENDER-EMBED.
+      DISPLAY SECTION ID "source-embedding"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "SOURCE EMBEDDING".
+         DISPLAY HEADING-2 "The source is the artifact."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH EMBED-BODY.
+         DISPLAY CALLOUT "Your .rcl source is your intellectual property. RECALL embeds it in the output so the artifact remembers its origin — it does not transmit or publish it anywhere."
+            WITH TYPE NOTE.
+      STOP SECTION.
+
+   RENDER-PRIVACY.
+      DISPLAY SECTION ID "privacy"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "PRIVACY".
+         DISPLAY HEADING-2 "No tracking. No cookies."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH PRIVACY-BODY.
+         DISPLAY PARAGRAPH FONTS-BODY.
+         DISPLAY CALLOUT "No account. No sign-up. No data collected. The site exists to serve documentation and nothing else."
+            WITH TYPE TIP.
+      STOP SECTION.
+
+   RENDER-WARRANTY.
+      DISPLAY SECTION ID "warranty"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "WARRANTY AND LIABILITY".
+         DISPLAY HEADING-2 "Provided as-is."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH WARRANTY-BODY.
+         DISPLAY CALLOUT "This applies to the RECALL compiler, the CLI, and any compiled output. Use in production at your own discretion."
+            WITH TYPE WARNING.
+      STOP SECTION.
+
+   RENDER-ATTRIBUTION.
+      DISPLAY SECTION ID "attribution"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "ATTRIBUTION".
+         DISPLAY HEADING-2 "Built with RECALL."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH ATTR-BODY.
+         DISPLAY CALLOUT "This documentation site is itself written in RECALL. View source on any page — the .rcl origin is embedded in the HTML comment block at the top."
+            WITH TYPE TIP.
+      STOP SECTION.
+
+   RENDER-FOOTER.
+      COPY FROM "components/footer.rcpy".
+
+   STOP RUN.
