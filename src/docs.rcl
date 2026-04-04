@@ -11,10 +11,10 @@ ENVIRONMENT DIVISION.
 
 DATA DIVISION.
    WORKING-STORAGE SECTION.
-      01 INTRO-BODY     PIC X(240) VALUE "RECALL is a declarative web interface language with COBOL-inspired syntax. It transpiles .rcl source files to self-contained, zero-dependency HTML files. Every compiled page embeds its .rcl source in an HTML comment block.".
+      01 INTRO-BODY     PIC X(240) VALUE "RECALL is a declarative web interface language with COBOL-inspired syntax. It transpiles `.rcl` source files to self-contained, zero-dependency HTML files. Every compiled page embeds its `.rcl` source in an HTML comment block.".
       01 DIVISIONS-BODY PIC X(240) VALUE "Every RECALL program is divided into exactly five divisions, declared in order. This structure is borrowed directly from COBOL — explicit, readable, and non-negotiable.".
-      01 COPY-BODY      PIC X(240) VALUE "RECALL copybooks use the .rcpy extension — a deliberate reference to COBOL's .cpy format. Copybooks are never compiled standalone. They exist only to be COPY FROM'd into .rcl programs at compile time.".
-      01 CLI-BODY       PIC X(240) VALUE "The RECALL CLI provides three commands. All commands operate on files with the .rcl extension. Copybooks (.rcpy) are resolved automatically during compilation.".
+      01 COPY-BODY      PIC X(240) VALUE "RECALL copybooks use the `.rcpy` extension — a deliberate reference to COBOL's `.cpy` format. Copybooks are never compiled standalone. They exist only to be `COPY FROM`'d into `.rcl` programs at compile time.".
+      01 CLI-BODY       PIC X(240) VALUE "The RECALL CLI provides three commands. All commands operate on files with the `.rcl` extension. Copybooks (`.rcpy`) are resolved automatically during compilation.".
       01 INSTALL-CMD    PIC X(44)  VALUE "npm install -g @semanticintent/recall".
       01 COMPILE-CMD    PIC X(40)  VALUE "recall compile my-site.rcl".
       01 COMPILE-OUT    PIC X(50)  VALUE "recall compile my-site.rcl --out dist/".
@@ -226,7 +226,7 @@ PROCEDURE DIVISION.
          DISPLAY LABEL "LANGUAGE".
          DISPLAY HEADING-2 "Elements"
             WITH STYLE MONO.
-         DISPLAY PARAGRAPH "RECALL provides 16 built-in elements. All are invoked with DISPLAY inside a PROCEDURE DIVISION section.".
+         DISPLAY PARAGRAPH "RECALL provides 16 built-in elements. All are invoked with `DISPLAY` inside a `PROCEDURE DIVISION` section.".
          DISPLAY TABLE USING ELEMENT-REF
             WITH HEADERS "ELEMENT, ARGUMENTS, DESCRIPTION".
       STOP SECTION.
