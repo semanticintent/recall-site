@@ -76,8 +76,6 @@ PROCEDURE DIVISION.
          DISPLAY BUTTON CTA-GITHUB
             ON-CLICK GOTO "https://github.com/semanticintent/recall"
             WITH STYLE GHOST.
-         DISPLAY CODE-BLOCK HERO-CODE
-            WITH LANGUAGE "cobol".
       STOP SECTION.
 
    RENDER-AI.
