@@ -1,0 +1,12 @@
+{
+  "name": "recall-site",
+  "version": "1.0.0",
+  "description": "RECALL documentation site — built in RECALL",
+  "private": true,
+  "scripts": {
+    "build": "recall build src/ --out public/"
+  },
+  "dependencies": {
+    "@semanticintent/recall": "0.2.0"
+  }
+}
