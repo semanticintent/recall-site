@@ -20,9 +20,9 @@ DATA DIVISION.
       01 EX1-CODE     PIC X(600) VALUE "IDENTIFICATION DIVISION.\n   PROGRAM-ID.  MY-SITE.\n   PAGE-TITLE.  \"Hello, World.\".\n\nDATA DIVISION.\n   WORKING-STORAGE SECTION.\n      01 HERO-HEAD PIC X(40) VALUE \"STILL HERE.\".\n      01 HERO-BODY PIC X(200) VALUE \"Built to last.\".\n\nPROCEDURE DIVISION.\n\n   RENDER-HERO.\n      DISPLAY SECTION ID \"hero\"\n         WITH LAYOUT CENTERED\n         WITH PADDING LARGE.\n         DISPLAY HEADING-1 HERO-HEAD.\n         DISPLAY PARAGRAPH HERO-BODY.\n      STOP SECTION.\n\n   STOP RUN.".
 
       01 EX2-LABEL    PIC X(30)  VALUE "EXAMPLE 02 — NAVIGATION".
-      01 EX2-HEAD     PIC X(40)  VALUE "Sticky nav from hierarchical data.".
-      01 EX2-BODY     PIC X(200) VALUE "Navigation links live in the DATA DIVISION as ITEMS — a COBOL-style hierarchical group. Each 05-level entry is a link. The NAVIGATION element reads them at compile time.".
-      01 EX2-CODE     PIC X(600) VALUE "DATA DIVISION.\n   ITEMS SECTION.\n      01 NAV-ITEMS.\n         05 NAV-ITEM-1      PIC X(20) VALUE \"DOCS\".\n         05 NAV-ITEM-1-HREF PIC X(80) VALUE \"/docs.html\".\n         05 NAV-ITEM-2      PIC X(20) VALUE \"EXAMPLES\".\n         05 NAV-ITEM-2-HREF PIC X(80) VALUE \"/examples.html\".\n         05 NAV-ITEM-3      PIC X(20) VALUE \"GITHUB\".\n         05 NAV-ITEM-3-HREF PIC X(80) VALUE \"https://github.com/semanticintent/recall\".\n\nPROCEDURE DIVISION.\n\n   RENDER-NAV.\n      DISPLAY NAVIGATION USING NAV-ITEMS\n         WITH STICKY YES\n         WITH LOGO \"RECALL\".\n      STOP SECTION.\n\n   STOP RUN.".
+      01 EX2-HEAD     PIC X(40)  VALUE "Navigation via component copybook.".
+      01 EX2-BODY     PIC X(200) VALUE "Navigation items live in a .rcpy copybook. COPY FROM includes it at compile time. The item data stays in the component — not scattered across the main program. Each 05-level pair is one link.".
+      01 EX2-CODE     PIC X(600) VALUE "* components/nav.rcpy\nDATA DIVISION.\n   ITEMS SECTION.\n      01 NAV-ITEMS.\n         05 NAV-ITEM-1      PIC X(20) VALUE \"DOCS\".\n         05 NAV-ITEM-1-HREF PIC X(80) VALUE \"/docs.html\".\n         05 NAV-ITEM-2      PIC X(20) VALUE \"EXAMPLES\".\n         05 NAV-ITEM-2-HREF PIC X(80) VALUE \"/examples.html\".\n\nPROCEDURE DIVISION.\n   COMPONENT.\n      DISPLAY NAVIGATION USING NAV-ITEMS\n         WITH STICKY YES\n         WITH LOGO \"MY SITE\".\n      STOP SECTION.\n\n* index.rcl\nPROCEDURE DIVISION.\n\n   RENDER-NAV.\n      COPY FROM \"components/nav.rcpy\".\n\n   STOP RUN.".
 
       01 EX3-LABEL    PIC X(30)  VALUE "EXAMPLE 03 — CARD GRID".
       01 EX3-HEAD     PIC X(40)  VALUE "Group data as a card layout.".
@@ -30,9 +30,9 @@ DATA DIVISION.
       01 EX3-CODE     PIC X(600) VALUE "DATA DIVISION.\n   ITEMS SECTION.\n      01 PROJECT-ITEMS.\n         05 PROJECT-1.\n            10 PROJ-TITLE PIC X(60) VALUE \"THE SOURCE IS THE ARTIFACT\".\n            10 PROJ-DESC  PIC X(200) VALUE \"Every compiled page embeds its origin.\".\n            10 PROJ-TAG   PIC X(20) VALUE \"CORE\".\n            10 PROJ-HREF  PIC X(80) VALUE \"/docs.html\".\n         05 PROJECT-2.\n            10 PROJ-TITLE PIC X(60) VALUE \"ZERO DEPENDENCIES\".\n            10 PROJ-DESC  PIC X(200) VALUE \"One file. Inline CSS. No framework.\".\n            10 PROJ-TAG   PIC X(20) VALUE \"CONSTRAINT\".\n            10 PROJ-HREF  PIC X(80) VALUE \"/docs.html\".\n\nPROCEDURE DIVISION.\n\n   RENDER-GRID.\n      DISPLAY SECTION ID \"projects\"\n         WITH LAYOUT STACK\n         WITH PADDING MEDIUM.\n         DISPLAY CARD-LIST USING PROJECT-ITEMS\n            WITH COLUMNS 2\n            WITH HOVER-LIFT YES.\n      STOP SECTION.\n\n   STOP RUN.".
 
       01 EX4-LABEL    PIC X(30)  VALUE "EXAMPLE 04 — COPYBOOKS".
-      01 EX4-HEAD     PIC X(40)  VALUE "Reusable components via .rcpy files.".
-      01 EX4-BODY     PIC X(200) VALUE "Copybooks use the .rcpy extension — a direct reference to COBOL's .cpy format. They are never compiled standalone. COPY FROM inlines them at compile time. The output is still one self-contained HTML file.".
-      01 EX4-CODE     PIC X(600) VALUE "* components/nav.rcpy\nIDENTIFICATION DIVISION.\n   PROGRAM-ID. SITE-NAV.\n\nDATA DIVISION.\n   ITEMS SECTION.\n      01 NAV-ITEMS.\n         05 NAV-ITEM-1      PIC X(20) VALUE \"HOME\".\n         05 NAV-ITEM-1-HREF PIC X(80) VALUE \"/index.html\".\n\nPROCEDURE DIVISION.\n   COMPONENT.\n      DISPLAY NAVIGATION USING NAV-ITEMS\n         WITH STICKY YES\n         WITH LOGO \"MY SITE\".\n      STOP SECTION.\n\n* index.rcl — COPY FROM the copybook\nPROCEDURE DIVISION.\n\n   RENDER-NAV.\n      COPY FROM \"components/nav.rcpy\".\n\n   STOP RUN.".
+      01 EX4-HEAD     PIC X(40)  VALUE "Components with typed data contracts.".
+      01 EX4-BODY     PIC X(200) VALUE "Copybooks can declare an ACCEPTS contract. Load the component in COMPONENT DIVISION, then use DISPLAY WITH DATA to bind values. This is the @semanticintent/recall-ui pattern.".
+      01 EX4-CODE     PIC X(600) VALUE "* npm install @semanticintent/recall-ui\n\nENVIRONMENT DIVISION.\n   COPY FROM @semanticintent/recall-ui/themes/dark.rcpy.\n\nCOMPONENT DIVISION.\n   COPY FROM @semanticintent/recall-ui/components/nav.rcpy.\n\nDATA DIVISION.\n   ITEMS SECTION.\n      01 NAV-ITEMS.\n         05 NAV-ITEM-1      PIC X(20) VALUE \"HOME\".\n         05 NAV-ITEM-1-HREF PIC X(80) VALUE \"/index.html\".\n         05 NAV-ITEM-2      PIC X(20) VALUE \"ABOUT\".\n         05 NAV-ITEM-2-HREF PIC X(80) VALUE \"/about.html\".\n\nPROCEDURE DIVISION.\n\n   RENDER-NAV.\n      DISPLAY SITE-NAV\n         WITH DATA SITE-LOGO \"MY SITE\", NAV-ITEMS NAV-ITEMS.\n\n   STOP RUN.".
 
       01 EX5-LABEL    PIC X(30)  VALUE "EXAMPLE 05 — DOCS LAYOUT".
       01 EX5-HEAD     PIC X(40)  VALUE "Sidebar navigation for documentation.".
@@ -76,7 +76,7 @@ PROCEDURE DIVISION.
          DISPLAY PARAGRAPH EX2-BODY.
          DISPLAY CODE-BLOCK EX2-CODE
             WITH LANGUAGE "cobol".
-         DISPLAY CALLOUT "NAV-ITEM-N and NAV-ITEM-N-HREF must be consecutive 05-level entries. The NAVIGATION element pairs them automatically."
+         DISPLAY CALLOUT "The .rcpy file owns its data and its rendering. The main program uses one line: COPY FROM. The output is still one self-contained HTML file."
             WITH TYPE TIP.
       STOP SECTION.
 
@@ -102,7 +102,7 @@ PROCEDURE DIVISION.
          DISPLAY PARAGRAPH EX4-BODY.
          DISPLAY CODE-BLOCK EX4-CODE
             WITH LANGUAGE "cobol".
-         DISPLAY CALLOUT "recall build compiles all .rcl files and skips .rcpy files automatically. No config needed."
+         DISPLAY CALLOUT "ACCEPTS declares the component contract. WITH DATA satisfies it. The component defines the interface — the program provides the values."
             WITH TYPE NOTE.
       STOP SECTION.
 
