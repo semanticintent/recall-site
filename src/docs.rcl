@@ -72,8 +72,12 @@ DATA DIVISION.
             10 COL-DESC PIC X(100) VALUE "Grid of cards rendered from an ITEMS group.".
          05 ROW-7.
             10 COL-NAME PIC X(20) VALUE "TABLE".
-            10 COL-ARGS PIC X(40) VALUE "USING group WITH HEADERS col1, col2".
-            10 COL-DESC PIC X(100) VALUE "Bordered reference table from ITEMS data.".
+            10 COL-ARGS PIC X(40) VALUE "group WITH COLUMNS col1, col2 WITH STRIPED YES".
+            10 COL-DESC PIC X(100) VALUE "Data table from ITEMS group. COLUMNS sets headers; cells map to 10-level fields by position.".
+         05 ROW-7B.
+            10 COL-NAME PIC X(20) VALUE "STAT-GRID".
+            10 COL-ARGS PIC X(40) VALUE "group WITH COLUMNS 3/4/6".
+            10 COL-DESC PIC X(100) VALUE "Metric display grid from ITEMS group. Detects -VALUE and -LABEL fields per row automatically.".
          05 ROW-8.
             10 COL-NAME PIC X(20) VALUE "CALLOUT".
             10 COL-ARGS PIC X(40) VALUE "value WITH TYPE NOTE/TIP/WARNING/DANGER".
@@ -226,9 +230,9 @@ PROCEDURE DIVISION.
          DISPLAY LABEL "LANGUAGE".
          DISPLAY HEADING-2 "Elements"
             WITH STYLE MONO.
-         DISPLAY PARAGRAPH "RECALL provides 16 built-in elements. All are invoked with `DISPLAY` inside a `PROCEDURE DIVISION` section.".
-         DISPLAY TABLE USING ELEMENT-REF
-            WITH HEADERS "ELEMENT, ARGUMENTS, DESCRIPTION".
+         DISPLAY PARAGRAPH "RECALL provides 17 built-in elements. All are invoked with `DISPLAY` inside a `PROCEDURE DIVISION` section.".
+         DISPLAY TABLE ELEMENT-REF
+            WITH COLUMNS "ELEMENT, ARGUMENTS, DESCRIPTION".
       STOP SECTION.
 
    RENDER-COPYBOOKS.
