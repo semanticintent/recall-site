@@ -15,7 +15,7 @@ DATA DIVISION.
       01 HERO-SUB       PIC X(80)  VALUE "Three trillion dollars move through COBOL every day. Not because nobody replaced it. Because it was designed for something nobody else figured out: encoding business intent so precisely that the machine understands it directly.".
       01 CTA-DOCS       PIC X(20)  VALUE "READ THE DOCS".
       01 CTA-GITHUB     PIC X(20)  VALUE "VIEW ON GITHUB".
-      01 INSTALL-CMD    PIC X(44)  VALUE "npm install -g @semanticintent/recall".
+      01 INSTALL-CMD    PIC X(46)  VALUE "npm install -g @semanticintent/recall-compiler".
 
       01 AI-HEAD        PIC X(50)  VALUE "AI was trained on intent.".
       01 AI-BODY        PIC X(240) VALUE "When AI models learned to program, they learned on the most semantically dense language ever written. COBOL describes what the business needs — not how the machine works. Every PERFORM, every MOVE, every COMPUTE is a business decision encoded as a statement. AI reads intent. COBOL writes it.".

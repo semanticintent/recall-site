@@ -18,7 +18,7 @@ DATA DIVISION.
       01 COMPONENTS-BODY    PIC X(240) VALUE "RECALL components are reusable layout fragments defined in COMPONENT DIVISION. Each component declares what it ACCEPTS, and callers bind DATA DIVISION fields to it with the WITH DATA clause at invocation time.".
       01 LOAD-FROM-BODY     PIC X(240) VALUE "LOAD FROM reads a JSON or CSV file at compile time and injects its contents into the DATA DIVISION — scalars become WORKING-STORAGE fields, arrays become ITEMS groups. No runtime. No server. The data is embedded in the compiled HTML.".
       01 LIB-BODY           PIC X(240) VALUE "@semanticintent/recall-ui is the standard component library for RECALL. Install it into any project and COPY FROM its .rcpy files directly — themes, nav, hero, stat sections, card sections, and footers ready to use.".
-      01 INSTALL-CMD        PIC X(44)  VALUE "npm install -g @semanticintent/recall".
+      01 INSTALL-CMD        PIC X(46)  VALUE "npm install -g @semanticintent/recall-compiler".
       01 COMPILE-CMD    PIC X(40)  VALUE "recall compile my-site.rcl".
       01 COMPILE-OUT    PIC X(50)  VALUE "recall compile my-site.rcl --out dist/".
       01 BUILD-CMD      PIC X(40)  VALUE "recall build src/ --out public/".
@@ -246,9 +246,9 @@ Reports missing PROGRAM-ID, PAGE-TITLE, or empty PROCEDURE DIVISION.".
          05 NAV-SECTION-4.
             10 GROUP-LABEL     PIC X(30) VALUE "PROJECT".
             10 NAV-LINK-1      PIC X(30) VALUE "GitHub".
-            10 NAV-LINK-1-HREF PIC X(80) VALUE "https://github.com/semanticintent/recall".
+            10 NAV-LINK-1-HREF PIC X(80) VALUE "https://github.com/semanticintent/recall-compiler".
             10 NAV-LINK-2      PIC X(30) VALUE "npm".
-            10 NAV-LINK-2-HREF PIC X(80) VALUE "https://www.npmjs.com/package/@semanticintent/recall".
+            10 NAV-LINK-2-HREF PIC X(80) VALUE "https://www.npmjs.com/package/@semanticintent/recall-compiler".
 
 PROCEDURE DIVISION.
 
