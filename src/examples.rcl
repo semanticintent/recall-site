@@ -63,7 +63,7 @@ PROCEDURE DIVISION.
             WITH STYLE MONO.
          DISPLAY PARAGRAPH EX1-BODY.
          DISPLAY CODE-BLOCK EX1-CODE
-            WITH LANGUAGE "cobol".
+            WITH LANGUAGE "recall".
       STOP SECTION.
 
    RENDER-EX2.
@@ -75,7 +75,7 @@ PROCEDURE DIVISION.
             WITH STYLE MONO.
          DISPLAY PARAGRAPH EX2-BODY.
          DISPLAY CODE-BLOCK EX2-CODE
-            WITH LANGUAGE "cobol".
+            WITH LANGUAGE "recall".
          DISPLAY CALLOUT "The .rcpy file owns its data and its rendering. The main program uses one line: COPY FROM. The output is still one self-contained HTML file."
             WITH TYPE TIP.
       STOP SECTION.
@@ -89,7 +89,7 @@ PROCEDURE DIVISION.
             WITH STYLE MONO.
          DISPLAY PARAGRAPH EX3-BODY.
          DISPLAY CODE-BLOCK EX3-CODE
-            WITH LANGUAGE "cobol".
+            WITH LANGUAGE "recall".
       STOP SECTION.
 
    RENDER-EX4.
@@ -101,7 +101,7 @@ PROCEDURE DIVISION.
             WITH STYLE MONO.
          DISPLAY PARAGRAPH EX4-BODY.
          DISPLAY CODE-BLOCK EX4-CODE
-            WITH LANGUAGE "cobol".
+            WITH LANGUAGE "recall".
          DISPLAY CALLOUT "ACCEPTS declares the component contract. WITH DATA satisfies it. The component defines the interface — the program provides the values."
             WITH TYPE NOTE.
       STOP SECTION.
@@ -115,7 +115,7 @@ PROCEDURE DIVISION.
             WITH STYLE MONO.
          DISPLAY PARAGRAPH EX5-BODY.
          DISPLAY CODE-BLOCK EX5-CODE
-            WITH LANGUAGE "cobol".
+            WITH LANGUAGE "recall".
          DISPLAY CALLOUT "This documentation site is itself written in RECALL. View source on any page to see the .rcl origin embedded in the HTML."
             WITH TYPE TIP.
       STOP SECTION.
