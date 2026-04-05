@@ -12,3 +12,6 @@ ENVIRONMENT DIVISION.
    FONT SECTION.
       FONT-PRIMARY   IBM Plex Mono.
       FONT-SECONDARY IBM Plex Sans.
+   STYLE-BLOCK.
+      "--font-serif: 'IBM Plex Serif', Georgia, serif;
+       .recall-label { letter-spacing: 1.5px; }".
