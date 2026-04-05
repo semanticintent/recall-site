@@ -23,8 +23,8 @@ DATA DIVISION.
       01 TRANS-HEAD     PIC X(50)  VALUE "The programmer was always temporary.".
       01 TRANS-BODY     PIC X(240) VALUE "For sixty years, programmers lived between the business and the machine — translating intent into syntax. The business said what it needed. The programmer figured out how to say it in a language the machine understood. AI removes the translator. The business speaks. The machine listens. The code is the requirement.".
 
-      01 RECALL-HEAD    PIC X(50)  VALUE "RECALL is that idea for the web.".
-      01 RECALL-BODY    PIC X(240) VALUE "A declarative web interface language with COBOL-inspired syntax. You describe the page — its identity, its data, its structure — and the compiler produces a self-contained HTML file. No framework. No intermediary. The source is the business requirement. The output is the artifact.".
+      01 RECALL-HEAD    PIC X(50)  VALUE "RECALL is what COBOL would have built for the web.".
+      01 RECALL-BODY    PIC X(240) VALUE "A COBOL-inspired publishing language for the web. Declare the page — identity, data, structure. The compiler produces a self-contained HTML file. No framework. No intermediary. The source is the requirement. The output is the artifact.".
 
       01 LEGACY-HEAD    PIC X(50)  VALUE "Legacy forward.".
       01 LEGACY-BODY    PIC X(240) VALUE "COBOL systems from the 1960s still run payroll because they encoded business truth so precisely that replacement means rediscovering that truth from scratch. RECALL asks the same question for the web: what does a page look like if it is designed to last, to be read, and to remember where it came from?".
@@ -117,7 +117,7 @@ PROCEDURE DIVISION.
          DISPLAY HEADING-2 RECALL-HEAD
             WITH STYLE MONO.
          DISPLAY PARAGRAPH RECALL-BODY.
-         DISPLAY CALLOUT "RECALL is not a nostalgia project. It is a design argument: that intent-first, verbose, declarative syntax is exactly what the AI-native web needs."
+         DISPLAY CALLOUT "RECALL is not a nostalgia project. It is what COBOL would have built for the web — a publishing language where the source is the intent and the artifact remembers its origin."
             WITH TYPE NOTE.
       STOP SECTION.
 
