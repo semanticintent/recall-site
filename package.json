@@ -4,7 +4,7 @@
   "description": "RECALL documentation site — built in RECALL",
   "private": true,
   "scripts": {
-    "build": "./node_modules/.bin/recall build src/ --out public/"
+    "build": "recall build src/ --out public/"
   },
   "dependencies": {
     "@semanticintent/recall-compiler": "0.8.3"
