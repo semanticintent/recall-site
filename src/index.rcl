@@ -12,22 +12,22 @@ ENVIRONMENT DIVISION.
 DATA DIVISION.
    WORKING-STORAGE SECTION.
       01 HERO-HEAD      PIC X(20)  VALUE "COBOL was right.".
-      01 HERO-SUB       PIC X(80)  VALUE "Three trillion dollars move through COBOL every day. Not because nobody replaced it. Because it was designed for something nobody else figured out: encoding business intent so precisely that the machine understands it directly.".
+      01 HERO-SUB       PIC X(230) VALUE "Three trillion dollars move through COBOL every day. Not because nobody replaced it. Because it was designed for something nobody else figured out: encoding business intent so precisely that the machine understands it directly.".
       01 CTA-DOCS       PIC X(20)  VALUE "READ THE DOCS".
       01 CTA-GITHUB     PIC X(20)  VALUE "VIEW ON GITHUB".
       01 INSTALL-CMD    PIC X(46)  VALUE "npm install -g @semanticintent/recall-compiler".
 
       01 AI-HEAD        PIC X(50)  VALUE "AI was trained on intent.".
-      01 AI-BODY        PIC X(240) VALUE "When AI models learned to program, they learned on the most semantically dense language ever written. COBOL describes what the business needs — not how the machine works. Every PERFORM, every MOVE, every COMPUTE is a business decision encoded as a statement. AI reads intent. COBOL writes it.".
+      01 AI-BODY        PIC X(295) VALUE "When AI models learned to program, they learned on the most semantically dense language ever written. COBOL describes what the business needs — not how the machine works. Every PERFORM, every MOVE, every COMPUTE is a business decision encoded as a statement. AI reads intent. COBOL writes it.".
 
       01 TRANS-HEAD     PIC X(50)  VALUE "The programmer was always temporary.".
-      01 TRANS-BODY     PIC X(240) VALUE "For sixty years, programmers lived between the business and the machine — translating intent into syntax. The business said what it needed. The programmer figured out how to say it in a language the machine understood. AI removes the translator. The business speaks. The machine listens. The code is the requirement.".
+      01 TRANS-BODY     PIC X(320) VALUE "For sixty years, programmers lived between the business and the machine — translating intent into syntax. The business said what it needed. The programmer figured out how to say it in a language the machine understood. AI removes the translator. The business speaks. The machine listens. The code is the requirement.".
 
       01 RECALL-HEAD    PIC X(50)  VALUE "RECALL is what COBOL would have built for the web.".
       01 RECALL-BODY    PIC X(240) VALUE "A COBOL-inspired publishing language for the web. Declare the page — identity, data, structure. The compiler produces a self-contained HTML file. No framework. No intermediary. The source is the requirement. The output is the artifact.".
 
       01 LEGACY-HEAD    PIC X(50)  VALUE "Legacy forward.".
-      01 LEGACY-BODY    PIC X(240) VALUE "COBOL systems from the 1960s still run payroll because they encoded business truth so precisely that replacement means rediscovering that truth from scratch. RECALL asks the same question for the web: what does a page look like if it is designed to last, to be read, and to remember where it came from?".
+      01 LEGACY-BODY    PIC X(310) VALUE "COBOL systems from the 1960s still run payroll because they encoded business truth so precisely that replacement means rediscovering that truth from scratch. RECALL asks the same question for the web: what does a page look like if it is designed to last, to be read, and to remember where it came from?".
 
       01 INSTALL-HEAD   PIC X(30)  VALUE "Start in 30 seconds.".
 
@@ -47,7 +47,7 @@ DATA DIVISION.
             10 PROJ-HREF  PIC X(80)  VALUE "/docs.html".
          05 THESIS-3.
             10 PROJ-TITLE PIC X(50)  VALUE "THE CODE IS THE BUSINESS.".
-            10 PROJ-DESC  PIC X(200) VALUE "In COBOL, there is no gap between the requirement and the program. PERFORM CALCULATE-PAYROLL is a business statement. RECALL applies that principle to the web. DISPLAY SECTION WITH LAYOUT CENTERED is a design decision, not an implementation detail.".
+            10 PROJ-DESC  PIC X(255) VALUE "In COBOL, there is no gap between the requirement and the program. PERFORM CALCULATE-PAYROLL is a business statement. RECALL applies that principle to the web. DISPLAY SECTION WITH LAYOUT CENTERED is a design decision, not an implementation detail.".
             10 PROJ-TAG   PIC X(20)  VALUE "PHILOSOPHY".
             10 PROJ-HREF  PIC X(80)  VALUE "/docs.html".
          05 THESIS-4.
