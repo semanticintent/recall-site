@@ -90,28 +90,8 @@ PROCEDURE DIVISION.
 
       01 RECORD-EX       PIC X(200) VALUE "RECORD CARD-SHAPE WITH FIELDS   CARD-TITLE  PIC X(60)   CARD-BODY   PIC X(200).   01 CARDS RECORD CARD-SHAPE ROWS 4.".
 
-      01 LOAD-JSON-EX    PIC X(240) VALUE "DATA DIVISION.
-   LOAD FROM brief.json.
-
-* brief.json keys become field names:
-{
-  HERO-TITLE: Streaming Consolidation,
-  STATS: [
-    { VALUE: 2451, LABEL: FETCH Score },
-    { VALUE: 6/6,  LABEL: Dimensions  }
-  ]
-}".
-
-      01 LOAD-CSV-EX     PIC X(260) VALUE "DATA DIVISION.
-   LOAD FROM metrics.csv.
-
-* metrics.csv — header row becomes column names:
-NAME,SCORE,LAYER
-Revenue (D3),75,origin
-Quality (D5),62,momentum
-
-* Auto-generates METRICS group.
-* DISPLAY TABLE METRICS WITH COLUMNS Name, Score, Layer.".
+      01 LOAD-JSON-EX    PIC X(240) VALUE "DATA DIVISION.\n   LOAD FROM brief.json.\n\n* brief.json keys map to field names:\n{\n  HERO-TITLE: Streaming Consolidation,\n  STATS: [ { VALUE: 2451, LABEL: FETCH Score } ]\n}".
+      01 LOAD-CSV-EX     PIC X(260) VALUE "DATA DIVISION.\n   LOAD FROM metrics.csv.\n\n* header row becomes column names:\nNAME,SCORE,LAYER\nRevenue (D3),75,origin\nQuality (D5),62,momentum\n\n* Auto-generates METRICS group.".
 
       01 COMPILE-EX      PIC X(80)  VALUE "recall compile my-site.rcl
 recall compile my-site.rcl --out dist/".
@@ -522,7 +502,7 @@ PROCEDURE DIVISION.
             DISPLAY CODE-BLOCK INSTALL-CMD
                WITH LANGUAGE "bash".
             DISPLAY CODE-BLOCK MINIMAL-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "No config file. No build pipeline. Open the .html output directly in any browser."
                WITH TYPE TIP.
          STOP SECTION.
@@ -552,7 +532,7 @@ PROCEDURE DIVISION.
             DISPLAY TABLE USING PIC-TYPE-REF
                WITH COLUMNS "DECLARATION, KIND, USAGE".
             DISPLAY CODE-BLOCK PIC-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "Run `recall schema --json` to see the live element type contracts — which PIC types each element accepts."
                WITH TYPE TIP.
          STOP SECTION.
@@ -580,7 +560,7 @@ PROCEDURE DIVISION.
                WITH STYLE MONO.
             DISPLAY PARAGRAPH COPY-BODY.
             DISPLAY CODE-BLOCK "COPY FROM components/nav.rcpy."
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "A copybook can contain any RECALL division content. COPY FROM is resolved at compile time — the result is one self-contained HTML file."
                WITH TYPE NOTE.
             DISPLAY CALLOUT "Use `recall check --inspect` to see what DATA symbols are generated after all COPY FROM and LOAD FROM statements are resolved."
@@ -597,18 +577,18 @@ PROCEDURE DIVISION.
             DISPLAY PARAGRAPH COMPONENTS-BODY.
             DISPLAY HEADING-3 "Defining a component".
             DISPLAY CODE-BLOCK COMPONENT-DEF-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY HEADING-3 "Invoking with WITH DATA".
             DISPLAY CODE-BLOCK COMPONENT-USE-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY HEADING-3 "REQUIRED parameters".
             DISPLAY CODE-BLOCK REQUIRED-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "REQUIRED on an ACCEPTS parameter makes it a compile-time contract. Calling the component without that parameter fires RCL-017 — no output is written."
                WITH TYPE WARNING.
             DISPLAY HEADING-3 "COMMENT clause".
             DISPLAY CODE-BLOCK COMMENT-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "COMMENT clauses surface in `recall check --inspect` output and `--format json` under fieldIntent. They have no effect on compiled HTML — intent only."
                WITH TYPE NOTE.
          STOP SECTION.
@@ -623,12 +603,12 @@ PROCEDURE DIVISION.
             DISPLAY PARAGRAPH VALUE-LANG-BODY.
             DISPLAY HEADING-3 "VALUE BLOCK — multi-line strings".
             DISPLAY CODE-BLOCK VALUE-BLOCK-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "PIC X declared without a size (PIC X VALUE BLOCK.) is auto-sized by the compiler to fit the block content exactly."
                WITH TYPE NOTE.
             DISPLAY HEADING-3 "RECORD types — reusable group shapes".
             DISPLAY CODE-BLOCK RECORD-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "RECORD types are expanded at compile time. Use LIKE to stamp a defined shape onto a group field. All field names are generated deterministically."
                WITH TYPE NOTE.
          STOP SECTION.
@@ -643,10 +623,10 @@ PROCEDURE DIVISION.
             DISPLAY PARAGRAPH LOAD-BODY.
             DISPLAY HEADING-3 "Load from JSON".
             DISPLAY CODE-BLOCK LOAD-JSON-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY HEADING-3 "Load from CSV".
             DISPLAY CODE-BLOCK LOAD-CSV-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "LOAD FROM runs at compile time. No data files are bundled into the HTML — only the resolved field values are embedded."
                WITH TYPE NOTE.
             DISPLAY CALLOUT "Multiple LOAD FROM statements in one DATA DIVISION are supported. Data from all files is merged into a single symbol table."
@@ -753,7 +733,7 @@ PROCEDURE DIVISION.
             DISPLAY CODE-BLOCK LIB-INSTALL-EX
                WITH LANGUAGE "bash".
             DISPLAY CODE-BLOCK LIB-USAGE-EX
-               WITH LANGUAGE "cobol".
+               WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "recall-ui components declare strict ACCEPTS contracts. Your DATA DIVISION field names must match exactly. Run `recall check` after adding components."
                WITH TYPE WARNING.
             DISPLAY CALLOUT "Themes (dark.rcpy) go in ENVIRONMENT DIVISION via COPY FROM. Components go in COMPONENT DIVISION. The separation is enforced by the compiler."
