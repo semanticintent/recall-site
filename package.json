@@ -7,6 +7,6 @@
     "build": "recall build src/ --out public/ && cp static/_redirects public/_redirects"
   },
   "dependencies": {
-    "@semanticintent/recall-compiler": "0.8.7"
+    "@semanticintent/recall-compiler": "^0.8.8"
   }
 }
