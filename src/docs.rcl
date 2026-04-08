@@ -19,7 +19,7 @@ DATA DIVISION.
       01 ELEMENTS-BODY   PIC X(160) VALUE "RECALL provides 20 built-in elements invoked with DISPLAY. Run `recall schema` to query the live element registry from the installed compiler.".
       01 COPY-BODY       PIC X(240) VALUE "Copybooks use the `.rcpy` extension — a reference to COBOL's `.cpy` format. They are never compiled standalone; only COPY FROM'd into `.rcl` programs at compile time. `recall build` skips `.rcpy` files automatically.".
       01 COMPONENTS-BODY PIC X(210) VALUE "Components are reusable layout fragments defined in COMPONENT DIVISION. Each declares an ACCEPTS list — the DATA DIVISION field names it expects. Callers bind fields with WITH DATA at invocation.".
-      01 VALUE-LANG-BODY PIC X(280) VALUE "Four features modernise the data layer. VALUE BLOCK supports multi-line prose strings. VALUE HEREDOC preserves raw content — code examples, RECALL syntax, embedded quotes. RECORD types define reusable group shapes expanded at compile time. COMMENT clauses attach intent metadata for AI tooling.".
+      01 VALUE-LANG-BODY PIC X(294) VALUE "Four features modernise the data layer. VALUE BLOCK supports multi-line prose strings. VALUE HEREDOC preserves raw content — code examples, RECALL syntax, embedded quotes. RECORD types define reusable group shapes expanded at compile time. COMMENT clauses attach intent metadata for AI tooling.".
       01 LOAD-BODY       PIC X(240) VALUE "LOAD FROM reads a JSON or CSV file at compile time and injects its contents into the DATA DIVISION. Scalars become WORKING-STORAGE fields. Arrays become ITEMS groups. No runtime — values are baked into the compiled HTML.".
       01 DIAG-BODY       PIC X(240) VALUE "RECALL enforces 29 structured diagnostic codes. Each code is stable, searchable, and documentable. If a program compiles, it is valid. If not, the compiler tells you exactly what is wrong, where, and how to fix it.".
       01 STRICT-BODY     PIC X(250) VALUE "Strict mode promotes all warnings to errors — zero tolerance for CI pipelines. Machine-readable JSON output includes source lines and caret strings so editor integrations and AI tools can render diagnostics without parsing ANSI sequences.".
@@ -28,7 +28,7 @@ DATA DIVISION.
 
       01 DATA-COPY-BODY  PIC X(330) VALUE "DATA COPY brings shared field definitions from .rcpy copybooks into the DATA DIVISION at compile time. COPY FROM appears before WORKING-STORAGE SECTION. Fields are inlined as if declared locally — fully typed, validated, and visible to all diagnostic passes. Circular dependencies and field name collisions are compile errors.".
 
-      01 WITH-INTENT-BODY PIC X(340) VALUE "WITH INTENT annotates a DISPLAY statement with natural language intent for an AI compositor. Before expansion it compiles as a placeholder HTML comment (RCL-W09). Run `recall expand` to call the compositor — output is validated by the full compiler pipeline before writing. The compositor receives live schema, DATA DIVISION fields, COMMENT annotations, and palette.".
+      01 WITH-INTENT-BODY PIC X(366) VALUE "WITH INTENT annotates a DISPLAY statement with natural language intent for an AI compositor. Before expansion it compiles as a placeholder HTML comment (RCL-W09). Run `recall expand` to call the compositor — output is validated by the full compiler pipeline before writing. The compositor receives live schema, DATA DIVISION fields, COMMENT annotations, and palette.".
 
       * ── Code examples ─────────────────────────────────────
       01 INSTALL-CMD     PIC X(60)  VALUE "npm install -g @semanticintent/recall-compiler".
@@ -109,40 +109,58 @@ END HEREDOC.
       01 LOAD-JSON-EX    PIC X(240) VALUE "DATA DIVISION.\n   LOAD FROM brief.json.\n\n* brief.json keys map to field names:\n{\n  HERO-TITLE: Streaming Consolidation,\n  STATS: [ { VALUE: 2451, LABEL: FETCH Score } ]\n}".
       01 LOAD-CSV-EX     PIC X(260) VALUE "DATA DIVISION.\n   LOAD FROM metrics.csv.\n\n* header row becomes column names:\nNAME,SCORE,LAYER\nRevenue (D3),75,origin\nQuality (D5),62,momentum\n\n* Auto-generates METRICS group.".
 
-      01 COMPILE-EX      PIC X(80)  VALUE "recall compile my-site.rcl
-recall compile my-site.rcl --out dist/".
+      01 COMPILE-EX      PIC X(80)  VALUE HEREDOC.
+recall compile my-site.rcl
+recall compile my-site.rcl --out dist/
+END HEREDOC.
 
-      01 BUILD-EX        PIC X(60)  VALUE "recall build src/ --out public/
-recall build src/".
+      01 BUILD-EX        PIC X(60)  VALUE HEREDOC.
+recall build src/ --out public/
+recall build src/
+END HEREDOC.
 
-      01 CHECK-EX        PIC X(200) VALUE "recall check my-site.rcl
+      01 CHECK-EX        PIC X(200) VALUE HEREDOC.
+recall check my-site.rcl
 recall check my-site.rcl --strict
 recall check my-site.rcl --format json
 recall check my-site.rcl --quiet
-recall check my-site.rcl --inspect".
+recall check my-site.rcl --inspect
+END HEREDOC.
 
-      01 FIX-EX          PIC X(220) VALUE "recall fix my-site.rcl --dry-run   * show what would change
+      01 FIX-EX          PIC X(220) VALUE HEREDOC.
+recall fix my-site.rcl --dry-run   * show what would change
 recall fix my-site.rcl --yes       * apply all fixes without prompt
-recall fix my-site.rcl             * interactive — confirm each fix".
+recall fix my-site.rcl             * interactive — confirm each fix
+END HEREDOC.
 
-      01 HISTORY-EX      PIC X(80)  VALUE "recall history my-site.rcl
-recall history my-site.rcl --commits 5".
+      01 HISTORY-EX      PIC X(80)  VALUE HEREDOC.
+recall history my-site.rcl
+recall history my-site.rcl --commits 5
+END HEREDOC.
 
       01 STATS-EX        PIC X(40)  VALUE "recall stats my-site.rcl".
 
-      01 SCHEMA-EX       PIC X(120) VALUE "recall schema             * list all elements and PIC types
-recall schema --json       * machine-readable output".
+      01 SCHEMA-EX       PIC X(120) VALUE HEREDOC.
+recall schema             * list all elements and PIC types
+recall schema --json       * machine-readable output
+END HEREDOC.
 
-      01 EXPLAIN-EX      PIC X(60)  VALUE "recall explain RCL-001
-recall explain RCL-W05".
+      01 EXPLAIN-EX      PIC X(60)  VALUE HEREDOC.
+recall explain RCL-001
+recall explain RCL-W05
+END HEREDOC.
 
-      01 SCAFFOLD-EX     PIC X(240) VALUE "recall scaffold --list --plugin @semanticintent/recall-ui
+      01 SCAFFOLD-EX     PIC X(240) VALUE HEREDOC.
+recall scaffold --list --plugin @semanticintent/recall-ui
 recall scaffold PAGE-HERO --plugin @semanticintent/recall-ui
-recall scaffold PAGE-HERO --plugin @semanticintent/recall-ui --out ./my-page.rcl".
+recall scaffold PAGE-HERO --plugin @semanticintent/recall-ui --out ./my-page.rcl
+END HEREDOC.
 
-      01 EXPAND-EX       PIC X(140) VALUE "recall expand page.rcl
+      01 EXPAND-EX       PIC X(140) VALUE HEREDOC.
+recall expand page.rcl
 recall expand page.rcl --dry-run
-recall expand page.rcl --out ./expanded/".
+recall expand page.rcl --out ./expanded/
+END HEREDOC.
 
       01 DATA-COPY-EX    PIC X(200) VALUE HEREDOC.
 DATA DIVISION.
@@ -170,18 +188,23 @@ PROCEDURE DIVISION.
    STOP RUN.
 END HEREDOC.
 
-      01 EXIT-CODES-EX   PIC X(140) VALUE "0 — clean, no errors or warnings
+      01 EXIT-CODES-EX   PIC X(140) VALUE HEREDOC.
+0 — clean, no errors or warnings
 1 — errors present, no output written
-2 — warnings present, compiled unless --strict".
+2 — warnings present, compiled unless --strict
+END HEREDOC.
 
-      01 DIAGNOSTIC-EX   PIC X(250) VALUE "ERROR [RCL-001] type-mismatch — my-site.rcl:14:8
+      01 DIAGNOSTIC-EX   PIC X(250) VALUE HEREDOC.
+ERROR [RCL-001] type-mismatch — my-site.rcl:14:8
   DISPLAY HEADING-1 HERO-STAT
                     ^^^^^^^^^
   Type mismatch
   HEADING-1 expects PIC X — HERO-STAT is PIC 9(4)
-  Hint: use DISPLAY LABEL HERO-STAT for numeric display".
+  Hint: use DISPLAY LABEL HERO-STAT for numeric display
+END HEREDOC.
 
-      01 JSON-EX         PIC X(320) VALUE "recall check my-site.rcl --format json
+      01 JSON-EX         PIC X(320) VALUE HEREDOC.
+recall check my-site.rcl --format json
 
 {
   errors: 1, warnings: 0,
@@ -193,7 +216,8 @@ END HEREDOC.
     source: DISPLAY HEADING-1 HERO-STAT,
     caret:                     ^^^^^^^^^
   }]
-}".
+}
+END HEREDOC.
 
       01 LIB-INSTALL-EX  PIC X(50)  VALUE "npm install @semanticintent/recall-ui".
 
