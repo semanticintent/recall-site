@@ -23,8 +23,8 @@ DATA DIVISION.
       01 LOAD-BODY       PIC X(240) VALUE "LOAD FROM reads a JSON or CSV file at compile time and injects its contents into the DATA DIVISION. Scalars become WORKING-STORAGE fields. Arrays become ITEMS groups. No runtime — values are baked into the compiled HTML.".
       01 DIAG-BODY       PIC X(240) VALUE "RECALL enforces 26 structured diagnostic codes. Each code is stable, searchable, and documentable. If a program compiles, it is valid. If not, the compiler tells you exactly what is wrong, where, and how to fix it.".
       01 STRICT-BODY     PIC X(250) VALUE "Strict mode promotes all warnings to errors — zero tolerance for CI pipelines. Machine-readable JSON output includes source lines and caret strings so editor integrations and AI tools can render diagnostics without parsing ANSI sequences.".
-      01 CLI-BODY        PIC X(220) VALUE "The RECALL CLI provides commands for compilation, validation, auto-fix, history diffing, and introspection. All commands accept `.rcl` files. Copybooks (`.rcpy`) are resolved automatically during compilation.".
-      01 LIB-BODY        PIC X(210) VALUE "@semanticintent/recall-ui is the standard component library. Install once and COPY FROM its `.rcpy` files — the dark theme, nav, hero, stat-section, card-section, and footer are ready to use.".
+      01 CLI-BODY        PIC X(280) VALUE "The RECALL CLI provides commands for compilation, validation, scaffolding, auto-fix, history diffing, and introspection. All commands accept `.rcl` files. Copybooks (`.rcpy`) are resolved automatically during compilation.".
+      01 LIB-BODY        PIC X(280) VALUE "@semanticintent/recall-ui is the standard component library. Install once and use `recall scaffold` to generate a working .rcl from any component — or COPY FROM its `.rcpy` files directly. Includes the dark theme, nav, hero, stat-section, card-section, and footer.".
 
       * ── Code examples ─────────────────────────────────────
       01 INSTALL-CMD     PIC X(60)  VALUE "npm install -g @semanticintent/recall-compiler".
@@ -119,6 +119,10 @@ recall schema --json       * machine-readable output".
 
       01 EXPLAIN-EX      PIC X(60)  VALUE "recall explain RCL-001
 recall explain RCL-W05".
+
+      01 SCAFFOLD-EX     PIC X(240) VALUE "recall scaffold --list --plugin @semanticintent/recall-ui
+recall scaffold PAGE-HERO --plugin @semanticintent/recall-ui
+recall scaffold PAGE-HERO --plugin @semanticintent/recall-ui --out ./my-page.rcl".
 
       01 EXIT-CODES-EX   PIC X(140) VALUE "0 — clean, no errors or warnings
 1 — errors present, no output written
@@ -720,6 +724,12 @@ PROCEDURE DIVISION.
             DISPLAY HEADING-3 "recall explain — per-code reference".
             DISPLAY CODE-BLOCK EXPLAIN-EX
                WITH LANGUAGE "bash".
+
+            DISPLAY HEADING-3 "recall scaffold — generate .rcl from component manifest".
+            DISPLAY CODE-BLOCK SCAFFOLD-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall scaffold reads the component manifest from any installed plugin package and generates a complete, compilable .rcl pre-populated with the correct DATA DIVISION fields, PIC types, COMMENT annotations, and PROCEDURE DIVISION usage. Fill in the placeholder values and recall compile."
+               WITH TYPE TIP.
          STOP SECTION.
 
          * ── Component Library ────────────────────────────────
