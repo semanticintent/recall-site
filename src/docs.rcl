@@ -19,12 +19,16 @@ DATA DIVISION.
       01 ELEMENTS-BODY   PIC X(160) VALUE "RECALL provides 20 built-in elements invoked with DISPLAY. Run `recall schema` to query the live element registry from the installed compiler.".
       01 COPY-BODY       PIC X(240) VALUE "Copybooks use the `.rcpy` extension — a reference to COBOL's `.cpy` format. They are never compiled standalone; only COPY FROM'd into `.rcl` programs at compile time. `recall build` skips `.rcpy` files automatically.".
       01 COMPONENTS-BODY PIC X(210) VALUE "Components are reusable layout fragments defined in COMPONENT DIVISION. Each declares an ACCEPTS list — the DATA DIVISION field names it expects. Callers bind fields with WITH DATA at invocation.".
-      01 VALUE-LANG-BODY PIC X(240) VALUE "Three features modernise the data layer. VALUE BLOCK supports multi-line string literals. RECORD types define reusable group shapes declared once and expanded anywhere. COMMENT clauses attach intent metadata for AI tooling.".
+      01 VALUE-LANG-BODY PIC X(280) VALUE "Four features modernise the data layer. VALUE BLOCK supports multi-line prose strings. VALUE HEREDOC preserves raw content — code examples, RECALL syntax, embedded quotes. RECORD types define reusable group shapes expanded at compile time. COMMENT clauses attach intent metadata for AI tooling.".
       01 LOAD-BODY       PIC X(240) VALUE "LOAD FROM reads a JSON or CSV file at compile time and injects its contents into the DATA DIVISION. Scalars become WORKING-STORAGE fields. Arrays become ITEMS groups. No runtime — values are baked into the compiled HTML.".
-      01 DIAG-BODY       PIC X(240) VALUE "RECALL enforces 26 structured diagnostic codes. Each code is stable, searchable, and documentable. If a program compiles, it is valid. If not, the compiler tells you exactly what is wrong, where, and how to fix it.".
+      01 DIAG-BODY       PIC X(240) VALUE "RECALL enforces 29 structured diagnostic codes. Each code is stable, searchable, and documentable. If a program compiles, it is valid. If not, the compiler tells you exactly what is wrong, where, and how to fix it.".
       01 STRICT-BODY     PIC X(250) VALUE "Strict mode promotes all warnings to errors — zero tolerance for CI pipelines. Machine-readable JSON output includes source lines and caret strings so editor integrations and AI tools can render diagnostics without parsing ANSI sequences.".
       01 CLI-BODY        PIC X(280) VALUE "The RECALL CLI provides commands for compilation, validation, scaffolding, auto-fix, history diffing, and introspection. All commands accept `.rcl` files. Copybooks (`.rcpy`) are resolved automatically during compilation.".
       01 LIB-BODY        PIC X(280) VALUE "@semanticintent/recall-ui is the standard component library. Install once and use `recall scaffold` to generate a working .rcl from any component — or COPY FROM its `.rcpy` files directly. Includes the dark theme, nav, hero, stat-section, card-section, and footer.".
+
+      01 DATA-COPY-BODY  PIC X(330) VALUE "DATA COPY brings shared field definitions from .rcpy copybooks into the DATA DIVISION at compile time. COPY FROM appears before WORKING-STORAGE SECTION. Fields are inlined as if declared locally — fully typed, validated, and visible to all diagnostic passes. Circular dependencies and field name collisions are compile errors.".
+
+      01 WITH-INTENT-BODY PIC X(340) VALUE "WITH INTENT annotates a DISPLAY statement with natural language intent for an AI compositor. Before expansion it compiles as a placeholder HTML comment (RCL-W09). Run `recall expand` to call the compositor — output is validated by the full compiler pipeline before writing. The compositor receives live schema, DATA DIVISION fields, COMMENT annotations, and palette.".
 
       * ── Code examples ─────────────────────────────────────
       01 INSTALL-CMD     PIC X(60)  VALUE "npm install -g @semanticintent/recall-compiler".
@@ -124,6 +128,34 @@ recall explain RCL-W05".
 recall scaffold PAGE-HERO --plugin @semanticintent/recall-ui
 recall scaffold PAGE-HERO --plugin @semanticintent/recall-ui --out ./my-page.rcl".
 
+      01 EXPAND-EX       PIC X(140) VALUE "recall expand page.rcl
+recall expand page.rcl --dry-run
+recall expand page.rcl --out ./expanded/".
+
+      01 DATA-COPY-EX    PIC X(200) VALUE "DATA DIVISION.
+   COPY FROM shared/nav-fields.rcpy.
+   WORKING-STORAGE SECTION.
+      01 PAGE-TITLE PIC X(60) VALUE Home.".
+
+      01 VALUE-HEREDOC-EX PIC X VALUE HEREDOC.
+01 BODY-TEXT PIC X VALUE HEREDOC.
+   This is multi-line content.
+   It can contain "quoted strings" and RECALL syntax:
+      PROCEDURE DIVISION.
+      DISPLAY HEADING-1 BODY-TEXT.
+   Everything between the delimiters is preserved exactly.
+END HEREDOC.
+END HEREDOC.
+
+      01 WITH-INTENT-EX  PIC X VALUE HEREDOC.
+PROCEDURE DIVISION.
+   RENDER.
+      DISPLAY HERO
+         WITH INTENT "dramatic opening, single product, urgency without hype"
+         WITH DATA PRODUCT-NAME, PRODUCT-TAGLINE, CTA-PRIMARY.
+   STOP RUN.
+END HEREDOC.
+
       01 EXIT-CODES-EX   PIC X(140) VALUE "0 — clean, no errors or warnings
 1 — errors present, no output written
 2 — warnings present, compiled unless --strict".
@@ -183,7 +215,7 @@ PROCEDURE DIVISION.
          05 ROW-3.
             10 COL-DIV  PIC X(30)  VALUE "DATA DIVISION".
             10 COL-REQ  PIC X(10)  VALUE "REQUIRED".
-            10 COL-DESC PIC X(115) VALUE "Fields and groups — WORKING-STORAGE for scalars, ITEMS for groups. LOAD FROM ingests JSON or CSV at compile time.".
+            10 COL-DESC PIC X(150) VALUE "Fields and groups — WORKING-STORAGE for scalars, ITEMS for groups. COPY FROM inlines shared fields. LOAD FROM ingests JSON or CSV at compile time.".
          05 ROW-4.
             10 COL-DIV  PIC X(30)  VALUE "COMPONENT DIVISION".
             10 COL-REQ  PIC X(10)  VALUE "OPTIONAL".
@@ -401,6 +433,26 @@ PROCEDURE DIVISION.
             10 COL-CODE PIC X(12) VALUE "RCL-022".
             10 COL-CAT  PIC X(20) VALUE "format".
             10 COL-DESC PIC X(80) VALUE "Palette key has a trailing period — colour lookup fails silently.".
+         05 ERR-23.
+            10 COL-CODE PIC X(12) VALUE "RCL-023".
+            10 COL-CAT  PIC X(20) VALUE "syntax".
+            10 COL-DESC PIC X(80) VALUE "Statement has no terminator — every DISPLAY must end with a period.".
+         05 ERR-24.
+            10 COL-CODE PIC X(12) VALUE "RCL-024".
+            10 COL-CAT  PIC X(20) VALUE "unknown-identifier".
+            10 COL-DESC PIC X(80) VALUE "DATA COPY file not found — COPY FROM in DATA DIVISION cannot be resolved.".
+         05 ERR-25.
+            10 COL-CODE PIC X(12) VALUE "RCL-025".
+            10 COL-CAT  PIC X(20) VALUE "structural".
+            10 COL-DESC PIC X(80) VALUE "DATA COPY field name collision — copybook field duplicates a local field.".
+         05 ERR-26.
+            10 COL-CODE PIC X(12) VALUE "RCL-026".
+            10 COL-CAT  PIC X(20) VALUE "structural".
+            10 COL-DESC PIC X(80) VALUE "Circular DATA COPY dependency — COPY FROM chain creates a cycle.".
+         05 ERR-27.
+            10 COL-CODE PIC X(12) VALUE "RCL-027".
+            10 COL-CAT  PIC X(20) VALUE "structural".
+            10 COL-DESC PIC X(80) VALUE "WITH INTENT expansion failed — compositor returned invalid RECALL.".
 
       * ── Warning reference table ────────────────────────────
       01 WARN-REF.
@@ -424,6 +476,22 @@ PROCEDURE DIVISION.
             10 COL-CODE PIC X(12) VALUE "RCL-W05".
             10 COL-CAT  PIC X(20) VALUE "type-mismatch".
             10 COL-DESC PIC X(80) VALUE "Numeric PIC 9 field used in a string-accepting element — implicit coercion.".
+         05 WARN-06.
+            10 COL-CODE PIC X(12) VALUE "RCL-W06".
+            10 COL-CAT  PIC X(20) VALUE "data".
+            10 COL-DESC PIC X(80) VALUE "Field referenced in PROCEDURE but declared without VALUE — renders empty.".
+         05 WARN-07.
+            10 COL-CODE PIC X(12) VALUE "RCL-W07".
+            10 COL-CAT  PIC X(20) VALUE "syntax".
+            10 COL-DESC PIC X(80) VALUE "Unknown PIC type — field defaulted to PIC X, compilation continues.".
+         05 WARN-08.
+            10 COL-CODE PIC X(12) VALUE "RCL-W08".
+            10 COL-CAT  PIC X(20) VALUE "syntax".
+            10 COL-DESC PIC X(80) VALUE "Malformed VALUE clause — treated as empty string, compilation continues.".
+         05 WARN-09.
+            10 COL-CODE PIC X(12) VALUE "RCL-W09".
+            10 COL-CAT  PIC X(20) VALUE "structural".
+            10 COL-DESC PIC X(80) VALUE "WITH INTENT clause not yet expanded — renders as HTML placeholder comment.".
 
       * ── Sidebar navigation ─────────────────────────────────
       01 DOCS-NAV.
@@ -449,6 +517,10 @@ PROCEDURE DIVISION.
             10 NAV-LINK-6-HREF PIC X(80) VALUE "#value-language".
             10 NAV-LINK-7      PIC X(30) VALUE "Data Loading".
             10 NAV-LINK-7-HREF PIC X(80) VALUE "#load-from".
+            10 NAV-LINK-8      PIC X(30) VALUE "DATA COPY".
+            10 NAV-LINK-8-HREF PIC X(80) VALUE "#data-copy".
+            10 NAV-LINK-9      PIC X(30) VALUE "WITH INTENT".
+            10 NAV-LINK-9-HREF PIC X(80) VALUE "#with-intent".
          05 NAV-SECTION-3.
             10 GROUP-LABEL     PIC X(30) VALUE "DIAGNOSTICS".
             10 NAV-LINK-1      PIC X(30) VALUE "Error Codes".
@@ -605,10 +677,15 @@ PROCEDURE DIVISION.
             DISPLAY HEADING-2 "Value Language"
                WITH STYLE MONO.
             DISPLAY PARAGRAPH VALUE-LANG-BODY.
-            DISPLAY HEADING-3 "VALUE BLOCK — multi-line strings".
+            DISPLAY HEADING-3 "VALUE BLOCK — multi-line prose strings".
             DISPLAY CODE-BLOCK VALUE-BLOCK-EX
                WITH LANGUAGE "RECALL".
             DISPLAY CALLOUT "PIC X declared without a size (PIC X VALUE BLOCK.) is auto-sized by the compiler to fit the block content exactly."
+               WITH TYPE NOTE.
+            DISPLAY HEADING-3 "VALUE HEREDOC — opaque raw content".
+            DISPLAY CODE-BLOCK VALUE-HEREDOC-EX
+               WITH LANGUAGE "RECALL".
+            DISPLAY CALLOUT "HEREDOC closes only on END HEREDOC. — not on any heuristic. Use it for content that contains RECALL syntax, quoted strings, or JSON fragments. PIC X is auto-sized."
                WITH TYPE NOTE.
             DISPLAY HEADING-3 "RECORD types — reusable group shapes".
             DISPLAY CODE-BLOCK RECORD-EX
@@ -637,6 +714,38 @@ PROCEDURE DIVISION.
                WITH TYPE TIP.
          STOP SECTION.
 
+         * ── DATA COPY ────────────────────────────────────────
+         DISPLAY SECTION ID "data-copy"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "LANGUAGE".
+            DISPLAY HEADING-2 "DATA COPY"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH DATA-COPY-BODY.
+            DISPLAY CODE-BLOCK DATA-COPY-EX
+               WITH LANGUAGE "RECALL".
+            DISPLAY CALLOUT "Fields from a DATA COPY copybook are visible to the type checker, `recall check --inspect`, and `recall check --format json`. They appear in the compositor payload alongside locally declared fields."
+               WITH TYPE NOTE.
+            DISPLAY CALLOUT "Field name collisions (RCL-025) and circular COPY chains (RCL-026) are compile errors. RCL-024 fires when the referenced file cannot be found."
+               WITH TYPE WARNING.
+         STOP SECTION.
+
+         * ── WITH INTENT ──────────────────────────────────────
+         DISPLAY SECTION ID "with-intent"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "LANGUAGE".
+            DISPLAY HEADING-2 "WITH INTENT"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH WITH-INTENT-BODY.
+            DISPLAY CODE-BLOCK WITH-INTENT-EX
+               WITH LANGUAGE "RECALL".
+            DISPLAY CALLOUT "A WITH INTENT statement compiles before expansion. The page is always in a valid, deployable state — the placeholder comment is the safe default."
+               WITH TYPE NOTE.
+            DISPLAY CALLOUT "Run `recall expand --dry-run` to inspect the JSON payload the compositor will receive without making an API call."
+               WITH TYPE TIP.
+         STOP SECTION.
+
          * ── Error Codes ──────────────────────────────────────
          DISPLAY SECTION ID "error-codes"
             WITH LAYOUT STACK
@@ -653,7 +762,7 @@ PROCEDURE DIVISION.
             DISPLAY HEADING-3 "Warnings — shown but compilation continues".
             DISPLAY TABLE USING WARN-REF
                WITH COLUMNS "CODE, CATEGORY, DESCRIPTION".
-            DISPLAY CALLOUT "All 26 codes are actively enforced. Silent failures are errors. If a program compiles, it is valid."
+            DISPLAY CALLOUT "All 29 codes are actively enforced. Silent failures are errors. If a program compiles, it is valid."
                WITH TYPE TIP.
          STOP SECTION.
 
@@ -730,6 +839,12 @@ PROCEDURE DIVISION.
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall scaffold reads the component manifest from any installed plugin package and generates a complete, compilable .rcl pre-populated with the correct DATA DIVISION fields, PIC types, COMMENT annotations, and PROCEDURE DIVISION usage. Fill in the placeholder values and recall compile."
                WITH TYPE TIP.
+
+            DISPLAY HEADING-3 "recall expand — expand WITH INTENT via AI compositor".
+            DISPLAY CODE-BLOCK EXPAND-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall expand calls the Anthropic API with a structured payload — intent, DATA DIVISION fields, COMMENT annotations, palette, and component registry. The expanded source is validated by the full compiler pipeline before writing. Requires ANTHROPIC_API_KEY."
+               WITH TYPE NOTE.
          STOP SECTION.
 
          * ── Component Library ────────────────────────────────
