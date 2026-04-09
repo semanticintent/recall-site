@@ -8,10 +8,12 @@ DATA DIVISION.
          05 NAV-ITEM-1-HREF PIC X(80) VALUE "/docs.html".
          05 NAV-ITEM-2      PIC X(20) VALUE "EXAMPLES".
          05 NAV-ITEM-2-HREF PIC X(80) VALUE "/examples.html".
-         05 NAV-ITEM-3      PIC X(20) VALUE "GITHUB".
-         05 NAV-ITEM-3-HREF PIC X(80) VALUE "https://github.com/semanticintent/recall".
-         05 NAV-ITEM-4      PIC X(20) VALUE "LEGAL".
-         05 NAV-ITEM-4-HREF PIC X(80) VALUE "/legal.html".
+         05 NAV-ITEM-3      PIC X(20) VALUE "PIPELINE".
+         05 NAV-ITEM-3-HREF PIC X(80) VALUE "/pipeline.html".
+         05 NAV-ITEM-4      PIC X(20) VALUE "GITHUB".
+         05 NAV-ITEM-4-HREF PIC X(80) VALUE "https://github.com/semanticintent/recall".
+         05 NAV-ITEM-5      PIC X(20) VALUE "LEGAL".
+         05 NAV-ITEM-5-HREF PIC X(80) VALUE "/legal.html".
 
 PROCEDURE DIVISION.
    COMPONENT.

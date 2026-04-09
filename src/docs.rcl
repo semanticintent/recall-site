@@ -28,6 +28,10 @@ DATA DIVISION.
 
       01 DATA-COPY-BODY  PIC X(330) VALUE "DATA COPY brings shared field definitions from .rcpy copybooks into the DATA DIVISION at compile time. COPY FROM appears before WORKING-STORAGE SECTION. Fields are inlined as if declared locally — fully typed, validated, and visible to all diagnostic passes. Circular dependencies and field name collisions are compile errors.".
 
+      01 CRD-BODY        PIC X(290) VALUE "The Common Record Description validates field agreement across three pipeline layers: inputSchema (author-facing), brief JSON (storage), and DATA DIVISION (compiler-facing). `recall crd` catches undefined fields, PIC X truncations, and group cardinality mismatches before compilation.".
+
+      01 MANIFEST-BODY   PIC X(310) VALUE "The Pipeline Manifest assembles all four schema layers into one machine-readable payload — Language Schema, Component Manifest, Common Record Description, and Compositor Contract. `recall manifest --json` is the single read an AI orchestrator needs before touching anything in the pipeline.".
+
       01 WITH-INTENT-BODY PIC X(366) VALUE "WITH INTENT annotates a DISPLAY statement with natural language intent for an AI compositor. Before expansion it compiles as a placeholder HTML comment (RCL-W09). Run `recall expand` to call the compositor — output is validated by the full compiler pipeline before writing. The compositor receives live schema, DATA DIVISION fields, COMMENT annotations, and palette.".
 
       * ── Code examples ─────────────────────────────────────
@@ -160,6 +164,19 @@ END HEREDOC.
 recall expand page.rcl
 recall expand page.rcl --dry-run
 recall expand page.rcl --out ./expanded/
+END HEREDOC.
+
+      01 CRD-EX          PIC X(200) VALUE HEREDOC.
+recall crd page.rcl --against brief.json
+recall crd page.rcl --against brief.json --format json
+recall crd page.rcl --against brief.json --strict
+END HEREDOC.
+
+      01 MANIFEST-EX     PIC X(220) VALUE HEREDOC.
+recall manifest
+recall manifest --json
+recall manifest --layer crd
+recall manifest --json --plugin @stratiqx/recall-components
 END HEREDOC.
 
       01 DATA-COPY-EX    PIC X(200) VALUE HEREDOC.
@@ -571,6 +588,10 @@ END HEREDOC.
             10 GROUP-LABEL     PIC X(30) VALUE "CLI".
             10 NAV-LINK-1      PIC X(30) VALUE "Commands".
             10 NAV-LINK-1-HREF PIC X(80) VALUE "#cli".
+            10 NAV-LINK-2      PIC X(30) VALUE "CRD".
+            10 NAV-LINK-2-HREF PIC X(80) VALUE "#crd".
+            10 NAV-LINK-3      PIC X(30) VALUE "Manifest".
+            10 NAV-LINK-3-HREF PIC X(80) VALUE "#manifest".
          05 NAV-SECTION-5.
             10 GROUP-LABEL     PIC X(30) VALUE "ECOSYSTEM".
             10 NAV-LINK-1      PIC X(30) VALUE "Component Library".
@@ -885,6 +906,18 @@ PROCEDURE DIVISION.
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall expand calls the Anthropic API with a structured payload — intent, DATA DIVISION fields, COMMENT annotations, palette, and component registry. The expanded source is validated by the full compiler pipeline before writing. Requires ANTHROPIC_API_KEY."
                WITH TYPE NOTE.
+
+            DISPLAY HEADING-3 "recall crd — validate Common Record Description".
+            DISPLAY CODE-BLOCK CRD-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall crd validates field agreement across three pipeline layers — brief JSON, DATA DIVISION, and inputSchema. Four diagnostic codes: CRD-001 (unknown field), CRD-002 (missing field), CRD-003 (truncation), CRD-004 (cardinality mismatch). Use --strict in CI."
+               WITH TYPE NOTE.
+
+            DISPLAY HEADING-3 "recall manifest — unified AI entry point".
+            DISPLAY CODE-BLOCK MANIFEST-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall manifest assembles all four pipeline schema layers into one payload. Language schema is always inlined. Pass --plugin to populate the component list. Use --layer to inspect a single layer."
+               WITH TYPE TIP.
          STOP SECTION.
 
          * ── Component Library ────────────────────────────────

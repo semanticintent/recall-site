@@ -1,0 +1,187 @@
+IDENTIFICATION DIVISION.
+   PROGRAM-ID.   RECALL-PIPELINE.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
+   PAGE-TITLE.   "RECALL — Pipeline Architecture".
+   DESCRIPTION.  "The four schema layers of the RECALL pipeline — Language Schema, Component Manifest, Common Record Description, and Pipeline Manifest.".
+   FAVICON.      "/favicon.ico".
+
+ENVIRONMENT DIVISION.
+   COPY FROM "theme.rcpy".
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+
+      01 PIPELINE-INTRO-BODY PIC X(325) VALUE "The RECALL pipeline coordinates four schema layers. Each layer speaks to a different audience — the language itself, the component author, the data author, and the AI orchestrator. Together they answer three questions that every publishing pipeline must answer: what can I express, what do I fill in, and why does this exist.".
+
+      01 LAYERS-INTRO-BODY   PIC X(240) VALUE "Four layers. Each named. Three carry 1959 lineage from COBOL. One is purely AI-era. The fact that they connect without friction is the legitimacy of the architecture.".
+
+      01 CRD-BODY            PIC X(380) VALUE "The Common Record Description is the field agreement across three expression points: the MCP inputSchema (author-facing), the brief JSON (storage layer), and the RECALL DATA DIVISION (compiler-facing). All three encode the same contract in different syntaxes for different audiences. When they diverge, the compiler truncates silently. recall crd catches that before it happens.".
+
+      01 CRD-CHECKS-BODY     PIC X(290) VALUE "Four diagnostic codes cover the four divergence modes. CRD-001: field in brief has no DATA DIVISION declaration. CRD-002: DATA field has no brief value — renders empty. CRD-003: brief value exceeds PIC X limit — will truncate. CRD-004: brief array length differs from DATA group row count.".
+
+      01 MANIFEST-BODY       PIC X(320) VALUE "The Pipeline Manifest is the single entry point for institutional memory. An AI orchestrator re-enters the pipeline fresh on every run — it has no persistent mental model. The manifest encodes the why in machine-readable form so the AI can reconstruct the full pipeline contract without a human in the loop.".
+
+      01 HOPPER-BODY         PIC X(300) VALUE "Three of the four layers have 1959 DNA. Grace Hopper's COBOL gave us element vocabularies, COPY books, and record layouts. The Compositor Contract is purely AI-era — no 1959 precedent. The Pipeline Manifest carries the name Hopper would have given it: Program Library Directory.".
+
+      01 CRD-CMD-EX          PIC X VALUE HEREDOC.
+recall crd page.rcl --against brief.json
+recall crd page.rcl --against brief.json --format json
+recall crd page.rcl --against brief.json --strict
+recall crd page.rcl --against brief.json --quiet
+END HEREDOC.
+
+      01 MANIFEST-CMD-EX     PIC X VALUE HEREDOC.
+recall manifest
+recall manifest --json
+recall manifest --layer language
+recall manifest --layer crd
+recall manifest --layer compositor
+recall manifest --json --plugin @stratiqx/recall-components
+END HEREDOC.
+
+   ITEMS SECTION.
+
+      01 LAYER-TABLE.
+         05 LAYER-1.
+            10 COL-LAYER    PIC X(30) VALUE "Language Schema".
+            10 COL-COMMAND  PIC X(40) VALUE "recall schema --json".
+            10 COL-PURPOSE  PIC X(80) VALUE "All valid RECALL elements, PIC types, divisions, and clauses.".
+            10 COL-AUDIENCE PIC X(30) VALUE "AI compositor, author".
+         05 LAYER-2.
+            10 COL-LAYER    PIC X(30) VALUE "Component Manifest".
+            10 COL-COMMAND  PIC X(40) VALUE "recall scaffold --list --plugin".
+            10 COL-PURPOSE  PIC X(80) VALUE "Plugin component field shapes, PIC types, and COMMENT annotations.".
+            10 COL-AUDIENCE PIC X(30) VALUE "AI compositor, author".
+         05 LAYER-3.
+            10 COL-LAYER    PIC X(30) VALUE "Common Record Description".
+            10 COL-COMMAND  PIC X(40) VALUE "recall crd <file> --against <brief>".
+            10 COL-PURPOSE  PIC X(80) VALUE "Field agreement across inputSchema, brief JSON, and DATA DIVISION.".
+            10 COL-AUDIENCE PIC X(30) VALUE "AI compositor, compiler".
+         05 LAYER-4.
+            10 COL-LAYER    PIC X(30) VALUE "Pipeline Manifest".
+            10 COL-COMMAND  PIC X(40) VALUE "recall manifest --json".
+            10 COL-PURPOSE  PIC X(80) VALUE "Unified entry point — assembles all four layers for AI orchestrators.".
+            10 COL-AUDIENCE PIC X(30) VALUE "AI orchestrator".
+
+      01 QUESTIONS-TABLE.
+         05 ROW-1.
+            10 COL-QUESTION PIC X(40) VALUE "What can I express?".
+            10 COL-LAYERS   PIC X(60) VALUE "Language Schema, Component Manifest".
+         05 ROW-2.
+            10 COL-QUESTION PIC X(40) VALUE "What do I need to fill in?".
+            10 COL-LAYERS   PIC X(60) VALUE "Common Record Description".
+         05 ROW-3.
+            10 COL-QUESTION PIC X(40) VALUE "Why does any of this exist?".
+            10 COL-LAYERS   PIC X(60) VALUE "Pipeline Manifest".
+
+      01 LINEAGE-TABLE.
+         05 ROW-1.
+            10 COL-LAYER   PIC X(30) VALUE "Language Schema".
+            10 COL-ORIGIN  PIC X(30) VALUE "RECALL-native".
+            10 COL-LINEAGE PIC X(90) VALUE "What the language can express. The compiler's own vocabulary made legible.".
+         05 ROW-2.
+            10 COL-LAYER   PIC X(30) VALUE "Component Manifest".
+            10 COL-ORIGIN  PIC X(30) VALUE "COPY books, 1959".
+            10 COL-LINEAGE PIC X(90) VALUE "Shared definitions included at compile time. What exists to render with.".
+         05 ROW-3.
+            10 COL-LAYER   PIC X(30) VALUE "Common Record Description".
+            10 COL-ORIGIN  PIC X(30) VALUE "Record layouts, 1959".
+            10 COL-LINEAGE PIC X(90) VALUE "The field agreement that travels across every system that touches the same data.".
+         05 ROW-4.
+            10 COL-LAYER   PIC X(30) VALUE "Compositor Contract".
+            10 COL-ORIGIN  PIC X(30) VALUE "AI-native, 2026".
+            10 COL-LINEAGE PIC X(98) VALUE "The runtime protocol born from the need to let AI expand intent into structure. No 1959 precedent.".
+         05 ROW-5.
+            10 COL-LAYER   PIC X(30) VALUE "Pipeline Manifest".
+            10 COL-ORIGIN  PIC X(30) VALUE "Program Library Dir., 1959".
+            10 COL-LINEAGE PIC X(90) VALUE "The catalogue of what exists and what contract each entry honours.".
+
+PROCEDURE DIVISION.
+
+   RENDER-NAV.
+      COPY FROM "components/nav.rcpy".
+
+   RENDER-HERO.
+      DISPLAY SECTION ID "hero"
+         WITH LAYOUT CENTERED
+         WITH PADDING LARGE.
+         DISPLAY LABEL "PIPELINE ARCHITECTURE".
+         DISPLAY HEADING-1 "The four schema layers."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH PIPELINE-INTRO-BODY.
+      STOP SECTION.
+
+   RENDER-QUESTIONS.
+      DISPLAY SECTION ID "questions"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "THREE QUESTIONS".
+         DISPLAY HEADING-2 "Every pipeline must answer three questions."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH LAYERS-INTRO-BODY.
+         DISPLAY TABLE USING QUESTIONS-TABLE
+            WITH COLUMNS "QUESTION, LAYER".
+         DISPLAY CALLOUT "The first two questions are answered by every publishing tool. The third is not. The Pipeline Manifest is where RECALL answers it — in machine-readable form, for AI orchestrators that have no persistent mental model."
+            WITH TYPE NOTE.
+      STOP SECTION.
+
+   RENDER-LAYERS.
+      DISPLAY SECTION ID "layers"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "SCHEMA LAYERS".
+         DISPLAY HEADING-2 "The four layers."
+            WITH STYLE MONO.
+         DISPLAY TABLE USING LAYER-TABLE
+            WITH COLUMNS "LAYER, COMMAND, PURPOSE, AUDIENCE".
+      STOP SECTION.
+
+   RENDER-CRD.
+      DISPLAY SECTION ID "crd"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "COMMON RECORD DESCRIPTION".
+         DISPLAY HEADING-2 "Field agreement across all three layers."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH CRD-BODY.
+         DISPLAY HEADING-3 "Diagnostic codes".
+         DISPLAY PARAGRAPH CRD-CHECKS-BODY.
+         DISPLAY CODE-BLOCK CRD-CMD-EX
+            WITH LANGUAGE "bash".
+         DISPLAY CALLOUT "Run recall crd before every compile step to catch field divergence early. Use --strict in CI. Use --format json for machine-readable output in editor integrations."
+            WITH TYPE TIP.
+      STOP SECTION.
+
+   RENDER-MANIFEST.
+      DISPLAY SECTION ID "manifest"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "PIPELINE MANIFEST".
+         DISPLAY HEADING-2 "One read. Full institutional memory."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH MANIFEST-BODY.
+         DISPLAY CODE-BLOCK MANIFEST-CMD-EX
+            WITH LANGUAGE "bash".
+         DISPLAY CALLOUT "recall manifest --json is designed for AI orchestrators. The language schema is always inlined. Pass --plugin to populate the component list. Use --layer to inspect a single layer without the full payload."
+            WITH TYPE NOTE.
+      STOP SECTION.
+
+   RENDER-LINEAGE.
+      DISPLAY SECTION ID "lineage"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "LINEAGE".
+         DISPLAY HEADING-2 "Three layers have 1959 DNA."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH HOPPER-BODY.
+         DISPLAY TABLE USING LINEAGE-TABLE
+            WITH COLUMNS "LAYER, ORIGIN, WHAT IT ENCODES".
+         DISPLAY CALLOUT "Three layers have 1959 COBOL precedent. Two are AI-era inventions. The fact that they connect without friction is the legitimacy of the architecture."
+            WITH TYPE NOTE.
+      STOP SECTION.
+
+   RENDER-FOOTER.
+      COPY FROM "components/footer.rcpy".
+
+   STOP RUN.
