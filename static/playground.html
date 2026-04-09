@@ -122,6 +122,8 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
   <button class="preset-btn active" data-preset="hello">HELLO WORLD</button>
   <button class="preset-btn" data-preset="pic-types">PIC TYPES</button>
   <button class="preset-btn" data-preset="data-table">DATA TABLE</button>
+  <button class="preset-btn" data-preset="stat-grid">STAT-GRID</button>
+  <button class="preset-btn" data-preset="card-list">CARD-LIST</button>
   <button class="preset-btn" data-preset="with-intent">WITH INTENT</button>
 </div>
 
@@ -289,6 +291,119 @@ PROCEDURE DIVISION.
          DISPLAY PARAGRAPH INTRO.
          DISPLAY TABLE USING LAYERS-TABLE
             WITH COLUMNS "LAYER, COMMAND, WHO".
+      STOP SECTION.
+
+   STOP RUN.`,
+
+  'stat-grid': `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   STAT-DEMO.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
+   PAGE-TITLE.   "RECALL — STAT-GRID".
+   DESCRIPTION.  "Numbers to dashboard. One DISPLAY statement.".
+
+ENVIRONMENT DIVISION.
+   CONFIGURATION SECTION.
+      VIEWPORT   RESPONSIVE.
+      COLOR-MODE DARK.
+   PALETTE SECTION.
+      COLOR-BG     #080808.
+      COLOR-TEXT   #f0f0f0.
+      COLOR-ACCENT #00ff41.
+      COLOR-BORDER #2a2a2a.
+   FONT SECTION.
+      FONT-PRIMARY IBM Plex Mono.
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 TITLE PIC X(30) VALUE "RECALL Compiler — v1.0.8".
+      01 INTRO PIC X(180) VALUE "Four numbers. One DISPLAY statement. STAT-GRID is the ratio argument for RECALL — the gap between what you declare and what the compiler produces.".
+
+   ITEMS SECTION.
+      01 METRICS.
+         05 M1.
+            10 STAT-VALUE PIC X(10) VALUE "1.0.8".
+            10 STAT-LABEL PIC X(20) VALUE "Version".
+         05 M2.
+            10 STAT-VALUE PIC X(10) VALUE "124".
+            10 STAT-LABEL PIC X(20) VALUE "Tests Passing".
+         05 M3.
+            10 STAT-VALUE PIC X(10) VALUE "4".
+            10 STAT-LABEL PIC X(20) VALUE "Schema Layers".
+         05 M4.
+            10 STAT-VALUE PIC X(10) VALUE "1959".
+            10 STAT-LABEL PIC X(20) VALUE "Hopper's Year".
+
+PROCEDURE DIVISION.
+   RENDER.
+      DISPLAY SECTION ID "metrics"
+         WITH LAYOUT CENTERED
+         WITH PADDING LARGE.
+         DISPLAY LABEL "RECALL COMPILER".
+         DISPLAY HEADING-1 TITLE
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH INTRO.
+         DISPLAY STAT-GRID METRICS
+            WITH COLUMNS 4.
+      STOP SECTION.
+
+   STOP RUN.`,
+
+  'card-list': `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   CARD-DEMO.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
+   PAGE-TITLE.   "RECALL — CARD-LIST".
+   DESCRIPTION.  "Structured data to polished card grid.".
+
+ENVIRONMENT DIVISION.
+   CONFIGURATION SECTION.
+      VIEWPORT   RESPONSIVE.
+      COLOR-MODE DARK.
+   PALETTE SECTION.
+      COLOR-BG     #080808.
+      COLOR-TEXT   #f0f0f0.
+      COLOR-ACCENT #00ff41.
+      COLOR-BORDER #2a2a2a.
+   FONT SECTION.
+      FONT-PRIMARY IBM Plex Mono.
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 TITLE PIC X(30) VALUE "The case for RECALL.".
+      01 INTRO PIC X(190) VALUE "Three principles. One DISPLAY CARD-LIST statement. The structure is declared — layout, hover effects, and borders are compiler concerns, not yours.".
+
+   ITEMS SECTION.
+      01 THESIS.
+         05 C1.
+            10 C-TITLE PIC X(40) VALUE "THE SOURCE IS THE ARTIFACT.".
+            10 C-DESC  PIC X(170) VALUE "Every compiled page embeds its .rcl source in the HTML. View source, see origin. The artifact remembers what produced it.".
+            10 C-TAG   PIC X(20) VALUE "CORE PRINCIPLE".
+            10 C-HREF  PIC X(30) VALUE "/docs.html".
+         05 C2.
+            10 C-TITLE PIC X(40) VALUE "AI WAS TRAINED ON INTENT.".
+            10 C-DESC  PIC X(170) VALUE "COBOL describes what the business needs — not how the machine works. AI reads intent. RECALL writes it for the web.".
+            10 C-TAG   PIC X(20) VALUE "AI-NATIVE".
+            10 C-HREF  PIC X(30) VALUE "/docs.html".
+         05 C3.
+            10 C-TITLE PIC X(40) VALUE "THE TRANSLATOR IS OBSOLETE.".
+            10 C-DESC  PIC X(170) VALUE "The programmer translated intent into syntax. AI does that now. What remains is the intent itself — declared, not constructed.".
+            10 C-TAG   PIC X(20) VALUE "THE SHIFT".
+            10 C-HREF  PIC X(30) VALUE "/docs.html".
+
+PROCEDURE DIVISION.
+   RENDER.
+      DISPLAY SECTION ID "thesis"
+         WITH LAYOUT STACK
+         WITH PADDING LARGE.
+         DISPLAY LABEL "THREE PRINCIPLES".
+         DISPLAY HEADING-1 TITLE
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH INTRO.
+         DISPLAY CARD-LIST USING THESIS
+            WITH STYLE BORDERED
+            WITH COLUMNS 3
+            WITH HOVER-LIFT YES.
       STOP SECTION.
 
    STOP RUN.`,
