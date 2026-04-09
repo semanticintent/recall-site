@@ -451,24 +451,36 @@ ENVIRONMENT DIVISION.
 
 DATA DIVISION.
    WORKING-STORAGE SECTION.
-      01 INTRO   PIC X(230) VALUE "WITH INTENT marks a section for AI expansion. The AI compositor reads the intent clause and fills in the DATA DIVISION and PROCEDURE DIVISION structure. It is the AI-native extension of the language.".
-      01 EXAMPLE PIC X(210) VALUE "The source becomes the brief. The AI becomes the author. Run recall expand to pass this file to an AI compositor — it returns a fully populated DATA DIVISION and PROCEDURE DIVISION.".
+      01 HEADLINE  PIC X(40)  VALUE "RECALL COMPILER".
+      01 TAGLINE   PIC X(120) VALUE "Write source once. The compiler produces self-contained HTML — no framework, no runtime, no build pipeline.".
+      01 CTA-TEXT  PIC X(20)  VALUE "Read the docs".
+      01 CTA-HREF  PIC X(20)  VALUE "/docs.html".
+   ITEMS SECTION.
+      01 STATS.
+         05 S1-VALUE PIC X(6)  VALUE "65ms".
+         05 S1-LABEL PIC X(20) VALUE "Compile time".
+         05 S2-VALUE PIC X(4)  VALUE "0".
+         05 S2-LABEL PIC X(20) VALUE "Runtime deps".
+         05 S3-VALUE PIC X(4)  VALUE "124".
+         05 S3-LABEL PIC X(20) VALUE "Tests passing".
+         05 S4-VALUE PIC X(6)  VALUE "v1.0".
+         05 S4-LABEL PIC X(20) VALUE "Ships today".
 
 PROCEDURE DIVISION.
    RENDER-HERO.
       DISPLAY SECTION ID "hero"
          WITH LAYOUT STACK
          WITH PADDING LARGE.
-         DISPLAY LABEL "AI-NATIVE".
-         DISPLAY HEADING-1 "WITH INTENT."
+         DISPLAY LABEL "AI-NATIVE EXPANSION".
+         DISPLAY HEADING-1 HEADLINE
             WITH STYLE MONO.
-         DISPLAY PARAGRAPH INTRO.
+         DISPLAY PARAGRAPH TAGLINE.
       STOP SECTION.
 
-   RENDER-EXAMPLE.
-      DISPLAY CALLOUT
-         WITH INTENT "Show a highlighted note explaining when to use WITH INTENT vs writing RECALL manually."
-         WITH DATA INTRO, EXAMPLE.
+   RENDER-STATS.
+      DISPLAY STAT-GRID
+         WITH INTENT "Display the 4 performance stats in a 4-column grid, then a CTA button below."
+         WITH DATA STATS, CTA-TEXT, CTA-HREF.
 
    STOP RUN.`
 }
