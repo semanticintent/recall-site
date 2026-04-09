@@ -159,6 +159,8 @@ const API = 'https://recall-api.semanticintent.dev/compile'
 const PRESETS = {
   hello: `IDENTIFICATION DIVISION.
    PROGRAM-ID.   HELLO-WORLD.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
    PAGE-TITLE.   "Hello, RECALL".
    DESCRIPTION.  "A minimal RECALL example.".
 
@@ -193,6 +195,8 @@ PROCEDURE DIVISION.
 
   'pic-types': `IDENTIFICATION DIVISION.
    PROGRAM-ID.   PIC-TYPES.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
    PAGE-TITLE.   "RECALL — PIC Types".
 
 ENVIRONMENT DIVISION.
@@ -210,8 +214,8 @@ ENVIRONMENT DIVISION.
 DATA DIVISION.
    WORKING-STORAGE SECTION.
       01 TITLE-TEXT   PIC X(20)        VALUE "RECALL PIC Types".
-      01 YEAR-VAL     PIC 9(4)         VALUE 1959.
-      01 PRICE-VAL    PIC 9(4)V9(2)    VALUE 42.75.
+      01 YEAR-VAL     PIC 9(4)         VALUE "1959".
+      01 PRICE-VAL    PIC 9(4)V9(2)    VALUE "42.75".
       01 FLAG-VAL     PIC X(3)         VALUE "YES".
       01 BODY-TEXT    PIC X(240)       VALUE "RECALL uses PIC (PICTURE) clauses from COBOL to declare field types and widths. PIC X is alphanumeric. PIC 9 is numeric. V is the implied decimal point. Width is the maximum character count.".
 
@@ -239,6 +243,8 @@ PROCEDURE DIVISION.
 
   'data-table': `IDENTIFICATION DIVISION.
    PROGRAM-ID.   DATA-TABLE.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
    PAGE-TITLE.   "RECALL — Data Table".
 
 ENVIRONMENT DIVISION.
@@ -289,6 +295,8 @@ PROCEDURE DIVISION.
 
   'with-intent': `IDENTIFICATION DIVISION.
    PROGRAM-ID.   WITH-INTENT.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
    PAGE-TITLE.   "RECALL — WITH INTENT".
 
 ENVIRONMENT DIVISION.
@@ -306,7 +314,7 @@ ENVIRONMENT DIVISION.
 DATA DIVISION.
    WORKING-STORAGE SECTION.
       01 INTRO   PIC X(230) VALUE "WITH INTENT marks a section for AI expansion. The AI compositor reads the intent clause and fills in the DATA DIVISION and PROCEDURE DIVISION structure. It is the AI-native extension of the language.".
-      01 EXAMPLE PIC X(220) VALUE "An AI compositor receiving this source would expand the intent clause into concrete DATA fields and PROCEDURE statements — ready for recall compile. The source becomes the brief. The AI becomes the author.".
+      01 EXAMPLE PIC X(210) VALUE "The source becomes the brief. The AI becomes the author. Run recall expand to pass this file to an AI compositor — it returns a fully populated DATA DIVISION and PROCEDURE DIVISION.".
 
 PROCEDURE DIVISION.
    RENDER-HERO.
