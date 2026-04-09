@@ -40,6 +40,14 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 .preset-btn:hover { color: var(--text); }
 .preset-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
+/* ── Syntax token colours (match compiled RECALL code blocks) ── */
+.tok-kw    { color: #7ee787; }
+.tok-stmt  { color: #00ff41; }
+.tok-with  { color: #d2a8ff; }
+.tok-str   { color: #f0b060; }
+.tok-num   { color: #79b8ff; }
+.tok-field { color: #79b8ff; }
+
 /* ── Editor / Preview panes ── */
 .workspace { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
 .editor-pane { display: flex; flex-direction: column; border-right: 1px solid var(--border); min-height: 0; }
@@ -48,7 +56,24 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 .copy-btn { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.5px; background: none; border: 1px solid var(--border); color: var(--muted); padding: 4px 10px; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
 .copy-btn:hover { color: var(--text); border-color: var(--text); }
 .copy-btn.copied { color: var(--accent); border-color: var(--accent); }
-#editor { flex: 1; width: 100%; background: var(--bg); color: #c9d1d9; font-family: var(--font-mono); font-size: 13px; line-height: 1.75; padding: 20px 24px; border: none; outline: none; resize: none; tab-size: 3; }
+/* ── Editor overlay: highlight div sits behind transparent textarea ── */
+.editor-wrap { position: relative; flex: 1; overflow: hidden; min-height: 0; }
+.editor-hl {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  padding: 20px 24px; margin: 0;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.75;
+  color: #c9d1d9; background: var(--bg);
+  white-space: pre-wrap; word-wrap: break-word;
+  overflow: hidden; pointer-events: none; tab-size: 3;
+}
+#editor {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%; height: 100%;
+  background: transparent; color: transparent; caret-color: #e0e0e0;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.75;
+  padding: 20px 24px; border: none; outline: none; resize: none;
+  tab-size: 3; overflow-y: auto; overflow-x: hidden; white-space: pre-wrap;
+}
 .preview-pane { display: flex; flex-direction: column; min-height: 0; }
 #preview { flex: 1; width: 100%; border: none; background: #fff; min-height: 0; }
 
@@ -106,7 +131,10 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
       <span class="pane-label">Source — .rcl</span>
       <button class="copy-btn" id="copy-btn">Copy</button>
     </div>
-    <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+    <div class="editor-wrap">
+      <div id="editor-hl" class="editor-hl" aria-hidden="true"></div>
+      <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+    </div>
   </div>
   <div class="preview-pane">
     <div class="pane-header">
@@ -302,8 +330,65 @@ PROCEDURE DIVISION.
    STOP RUN.`
 }
 
+// ── Syntax highlighter — ported from recall-compiler syntaxHighlight() ──
+function syntaxHighlight(raw) {
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  const lines = raw.split('\n')
+  const out   = []
+  let heredoc = false
+
+  for (const line of lines) {
+    let s = esc(line)
+
+    // ── HEREDOC body ─────────────────────────────────────────────
+    if (heredoc) {
+      if (/^\s*END HEREDOC\./.test(line)) {
+        heredoc = false
+        out.push('<span class="tok-kw">' + s + '</span>')
+      } else {
+        out.push('<span class="tok-str">' + s + '</span>')
+      }
+      continue
+    }
+    if (/\bHEREDOC\b/.test(line) && !/END HEREDOC/.test(line)) heredoc = true
+
+    // ── Token passes (same order as compiler) ────────────────────
+    // String literals (escaped as &quot; by esc())
+    s = s.replace(/(&quot;)((?:[^&]|&(?!quot;))*?)(&quot;)/g,
+      '<span class="tok-str">$1$2$3</span>')
+    // Division headers
+    s = s.replace(/\b(IDENTIFICATION|ENVIRONMENT|DATA|PROCEDURE|COMPONENT) (DIVISION)\b/g,
+      '<span class="tok-kw">$1 $2</span>')
+    // Section headers
+    s = s.replace(/\b(WORKING-STORAGE|ITEMS|PALETTE|FONT|CONFIGURATION|STYLE-BLOCK) (SECTION)\b/g,
+      '<span class="tok-kw">$1 $2</span>')
+    // STOP RUN / STOP SECTION
+    s = s.replace(/\bSTOP (RUN|SECTION)\b/g,
+      '<span class="tok-stmt">STOP $1</span>')
+    // Display verbs
+    s = s.replace(/\b(DISPLAY|COPY|PERFORM|MOVE|COMPUTE)\b/g,
+      '<span class="tok-stmt">$1</span>')
+    // Clause keywords
+    s = s.replace(/\b(WITH|ON-CLICK|USING|FROM|PIC|VALUE)\b/g,
+      '<span class="tok-with">$1</span>')
+    // Identification / environment field names
+    s = s.replace(/\b(PROGRAM-ID|PAGE-TITLE|AUTHOR|DATE-WRITTEN|DESCRIPTION|FAVICON|VIEWPORT|COLOR-MODE|LANGUAGE|FONT-PRIMARY|FONT-SECONDARY|COLOR-BG|COLOR-TEXT|COLOR-ACCENT|COLOR-BORDER|COLOR-MUTED)\b/g,
+      '<span class="tok-field">$1</span>')
+    // Level numbers at line start
+    s = s.replace(/^( *)(01|05|10)(\s)/,
+      '$1<span class="tok-num">$2</span>$3')
+    // HEREDOC keyword on the opening line
+    s = s.replace(/\b(HEREDOC)\b/g, '<span class="tok-kw">$1</span>')
+
+    out.push(s)
+  }
+  // Trailing newline keeps the overlay height in sync with the textarea
+  return out.join('\n') + '\n'
+}
+
 // ── State ──────────────────────────────────────────────────────
 const editor      = document.getElementById('editor')
+const editorHl    = document.getElementById('editor-hl')
 const preview     = document.getElementById('preview')
 const status      = document.getElementById('status')
 const diagnostics = document.getElementById('diagnostics')
@@ -311,6 +396,15 @@ const compileBtn  = document.getElementById('compile-btn')
 const copyBtn     = document.getElementById('copy-btn')
 let debounceTimer = null
 let currentPreset = 'hello'
+
+// ── Highlight update + scroll sync ────────────────────────────
+function updateHighlight() {
+  editorHl.innerHTML = syntaxHighlight(editor.value)
+}
+editor.addEventListener('scroll', () => {
+  editorHl.scrollTop  = editor.scrollTop
+  editorHl.scrollLeft = editor.scrollLeft
+})
 
 // ── Compile ────────────────────────────────────────────────────
 async function doCompile(source) {
@@ -366,8 +460,9 @@ function showDiagnostics(items) {
   diagnostics.classList.add('visible')
 }
 
-// ── Debounce ───────────────────────────────────────────────────
+// ── Debounce + instant highlight ──────────────────────────────
 editor.addEventListener('input', () => {
+  updateHighlight()
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => doCompile(editor.value), 800)
 })
@@ -398,6 +493,7 @@ editor.addEventListener('keydown', e => {
     const end   = editor.selectionEnd
     editor.value = editor.value.slice(0, start) + '   ' + editor.value.slice(end)
     editor.selectionStart = editor.selectionEnd = start + 3
+    updateHighlight()
   }
 })
 
@@ -410,6 +506,7 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'))
     btn.classList.add('active')
     editor.value = PRESETS[key]
+    updateHighlight()
     clearTimeout(debounceTimer)
     doCompile(editor.value)
   })
@@ -417,6 +514,7 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
 
 // ── Initial load ───────────────────────────────────────────────
 editor.value = PRESETS[currentPreset]
+updateHighlight()
 doCompile(editor.value)
 </script>
 
