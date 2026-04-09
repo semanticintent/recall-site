@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RECALL — Playground</title>
+  <meta name="description" content="Write RECALL source in your browser. The compiler runs server-side and returns self-contained HTML.">
+  <link rel="icon" href="/favicon.ico">
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM%20Plex%20Mono:wght@400;500;600&family=IBM%20Plex%20Sans:wght@300;400;500;600&display=swap');
+:root {
+  --bg: #080808;
+  --text: #f0f0f0;
+  --muted: #e2e2e2;
+  --accent: #00ff41;
+  --border: #2a2a2a;
+  --panel: #0e0e0e;
+  --font-mono: 'IBM Plex Mono', 'Courier New', monospace;
+  --font-sans: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-mono); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px; -webkit-font-smoothing: antialiased; height: 100vh; display: flex; flex-direction: column; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { opacity: 0.8; }
+
+/* ── Nav ── */
+nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--bg); position: sticky; top: 0; z-index: 100; }
+.nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 100%; padding: 0 24px; }
+.nav-logo { font-weight: 600; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--text); cursor: pointer; transition: color 0.15s; }
+.nav-logo:hover { color: var(--accent); opacity: 1; }
+.nav-links { display: flex; gap: 32px; }
+.nav-links a { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: var(--text); opacity: 0.6; transition: color 0.15s, opacity 0.15s; }
+.nav-links a:hover { color: var(--accent); opacity: 1; }
+.nav-links a.active { color: var(--accent); opacity: 1; }
+
+/* ── Preset bar ── */
+.preset-bar { display: flex; align-items: center; gap: 0; border-bottom: 1px solid var(--border); background: var(--panel); flex-shrink: 0; padding: 0 12px; overflow-x: auto; }
+.preset-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); opacity: 0.45; margin-right: 16px; white-space: nowrap; }
+.preset-btn { padding: 10px 16px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--muted); cursor: pointer; transition: color 0.15s; white-space: nowrap; }
+.preset-btn:hover { color: var(--text); }
+.preset-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── Editor / Preview panes ── */
+.workspace { display: grid; grid-template-columns: 1fr 1fr; flex: 1; min-height: 0; }
+.editor-pane { display: flex; flex-direction: column; border-right: 1px solid var(--border); min-height: 0; }
+.pane-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
+.pane-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); opacity: 0.5; }
+.copy-btn { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.5px; background: none; border: 1px solid var(--border); color: var(--muted); padding: 4px 10px; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
+.copy-btn:hover { color: var(--text); border-color: var(--text); }
+.copy-btn.copied { color: var(--accent); border-color: var(--accent); }
+#editor { flex: 1; width: 100%; background: var(--bg); color: #c9d1d9; font-family: var(--font-mono); font-size: 13px; line-height: 1.75; padding: 20px 24px; border: none; outline: none; resize: none; tab-size: 3; }
+.preview-pane { display: flex; flex-direction: column; min-height: 0; }
+#preview { flex: 1; width: 100%; border: none; background: #fff; min-height: 0; }
+
+/* ── Compile bar ── */
+.compile-bar { display: flex; align-items: center; gap: 12px; padding: 8px 16px; border-top: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
+.compile-btn { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; background: var(--accent); color: var(--bg); border: none; padding: 8px 20px; cursor: pointer; font-weight: 600; transition: opacity 0.15s; }
+.compile-btn:hover { opacity: 0.85; }
+.compile-btn:disabled { opacity: 0.4; cursor: default; }
+.status { font-size: 12px; color: var(--muted); opacity: 0.6; flex: 1; }
+.status.ok  { color: var(--accent); opacity: 1; }
+.status.err { color: #f87171; opacity: 1; }
+
+/* ── Diagnostics ── */
+.diagnostics { border-top: 1px solid var(--border); background: #100808; flex-shrink: 0; max-height: 160px; overflow-y: auto; display: none; }
+.diagnostics.visible { display: block; }
+.diag-row { display: flex; gap: 16px; padding: 8px 20px; border-bottom: 1px solid rgba(248,113,113,0.1); font-size: 12px; font-family: var(--font-mono); }
+.diag-code { color: #f87171; font-weight: 600; white-space: nowrap; min-width: 60px; }
+.diag-msg  { color: var(--muted); }
+.diag-why  { color: var(--muted); opacity: 0.6; font-size: 11px; }
+
+@media (max-width: 768px) {
+  .workspace { grid-template-columns: 1fr; }
+  .editor-pane { border-right: none; border-bottom: 1px solid var(--border); max-height: 40vh; }
+  .nav-links { gap: 16px; }
+}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="/index.html" class="nav-logo">RECALL</a>
+    <div class="nav-links">
+      <a href="/docs.html">DOCS</a>
+      <a href="/examples.html">EXAMPLES</a>
+      <a href="/pipeline.html">PIPELINE</a>
+      <a href="/playground.html" class="active">PLAYGROUND</a>
+      <a href="https://github.com/semanticintent/recall">GITHUB</a>
+      <a href="/legal.html">LEGAL</a>
+    </div>
+  </div>
+</nav>
+
+<div class="preset-bar">
+  <span class="preset-label">Presets</span>
+  <button class="preset-btn active" data-preset="hello">HELLO WORLD</button>
+  <button class="preset-btn" data-preset="pic-types">PIC TYPES</button>
+  <button class="preset-btn" data-preset="data-table">DATA TABLE</button>
+  <button class="preset-btn" data-preset="with-intent">WITH INTENT</button>
+</div>
+
+<div class="workspace">
+  <div class="editor-pane">
+    <div class="pane-header">
+      <span class="pane-label">Source — .rcl</span>
+      <button class="copy-btn" id="copy-btn">Copy</button>
+    </div>
+    <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+  </div>
+  <div class="preview-pane">
+    <div class="pane-header">
+      <span class="pane-label">Output — HTML</span>
+    </div>
+    <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+</div>
+
+<div class="compile-bar">
+  <button class="compile-btn" id="compile-btn">Compile ▶</button>
+  <span class="status" id="status">Ready.</span>
+</div>
+
+<div class="diagnostics" id="diagnostics"></div>
+
+<script>
+// ── API endpoint — update after Worker deploy ──────────────────
+const API = 'https://recall-api.michshat.workers.dev/compile'
+
+// ── Preset source examples ─────────────────────────────────────
+const PRESETS = {
+  hello: `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   HELLO-WORLD.
+   PAGE-TITLE.   "Hello, RECALL".
+   DESCRIPTION.  "A minimal RECALL example.".
+
+ENVIRONMENT DIVISION.
+   CONFIGURATION SECTION.
+      VIEWPORT   RESPONSIVE.
+      COLOR-MODE DARK.
+   PALETTE SECTION.
+      COLOR-BG     #080808.
+      COLOR-TEXT   #f0f0f0.
+      COLOR-ACCENT #00ff41.
+      COLOR-BORDER #2a2a2a.
+   FONT SECTION.
+      FONT-PRIMARY IBM Plex Mono.
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 INTRO PIC X(180) VALUE "RECALL is a COBOL-inspired publishing language for the web. Declare the page. The compiler produces self-contained HTML. No framework. No intermediary.".
+
+PROCEDURE DIVISION.
+   RENDER-HERO.
+      DISPLAY SECTION ID "hero"
+         WITH LAYOUT CENTERED
+         WITH PADDING LARGE.
+         DISPLAY LABEL "RECALL PLAYGROUND".
+         DISPLAY HEADING-1 "Hello, RECALL."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH INTRO.
+      STOP SECTION.
+
+   STOP RUN.`,
+
+  'pic-types': `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   PIC-TYPES.
+   PAGE-TITLE.   "RECALL — PIC Types".
+
+ENVIRONMENT DIVISION.
+   CONFIGURATION SECTION.
+      VIEWPORT   RESPONSIVE.
+      COLOR-MODE DARK.
+   PALETTE SECTION.
+      COLOR-BG     #080808.
+      COLOR-TEXT   #f0f0f0.
+      COLOR-ACCENT #00ff41.
+      COLOR-BORDER #2a2a2a.
+   FONT SECTION.
+      FONT-PRIMARY IBM Plex Mono.
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 TITLE-TEXT   PIC X(20)        VALUE "RECALL PIC Types".
+      01 YEAR-VAL     PIC 9(4)         VALUE 1959.
+      01 PRICE-VAL    PIC 9(4)V9(2)    VALUE 42.75.
+      01 FLAG-VAL     PIC X(3)         VALUE "YES".
+      01 BODY-TEXT    PIC X(240)       VALUE "RECALL uses PIC (PICTURE) clauses from COBOL to declare field types and widths. PIC X is alphanumeric. PIC 9 is numeric. V is the implied decimal point. Width is the maximum character count.".
+
+      01 CODE-EX      PIC X VALUE HEREDOC.
+PIC X(20)       alphanumeric, max 20 chars
+PIC 9(4)        integer, max 4 digits
+PIC 9(4)V9(2)   decimal — 4 digits . 2 digits
+PIC X(3)        short flag or code
+END HEREDOC.
+
+PROCEDURE DIVISION.
+   RENDER.
+      DISPLAY SECTION ID "types"
+         WITH LAYOUT STACK
+         WITH PADDING LARGE.
+         DISPLAY LABEL "DATA TYPES".
+         DISPLAY HEADING-1 TITLE-TEXT
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH BODY-TEXT.
+         DISPLAY CODE-BLOCK CODE-EX
+            WITH LANGUAGE "text".
+      STOP SECTION.
+
+   STOP RUN.`,
+
+  'data-table': `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   DATA-TABLE.
+   PAGE-TITLE.   "RECALL — Data Table".
+
+ENVIRONMENT DIVISION.
+   CONFIGURATION SECTION.
+      VIEWPORT   RESPONSIVE.
+      COLOR-MODE DARK.
+   PALETTE SECTION.
+      COLOR-BG     #080808.
+      COLOR-TEXT   #f0f0f0.
+      COLOR-ACCENT #00ff41.
+      COLOR-BORDER #2a2a2a.
+   FONT SECTION.
+      FONT-PRIMARY IBM Plex Mono.
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 INTRO PIC X(160) VALUE "The ITEMS SECTION holds tabular data as named groups. DISPLAY TABLE renders them as a structured HTML table with typed columns.".
+
+   ITEMS SECTION.
+      01 LAYERS-TABLE.
+         05 ROW-1.
+            10 COL-LAYER   PIC X(30) VALUE "Language Schema".
+            10 COL-COMMAND PIC X(30) VALUE "recall schema --json".
+            10 COL-WHO     PIC X(20) VALUE "AI compositor".
+         05 ROW-2.
+            10 COL-LAYER   PIC X(30) VALUE "Component Manifest".
+            10 COL-COMMAND PIC X(30) VALUE "recall scaffold --list".
+            10 COL-WHO     PIC X(20) VALUE "AI compositor".
+         05 ROW-3.
+            10 COL-LAYER   PIC X(30) VALUE "Pipeline Manifest".
+            10 COL-COMMAND PIC X(30) VALUE "recall manifest --json".
+            10 COL-WHO     PIC X(20) VALUE "AI orchestrator".
+
+PROCEDURE DIVISION.
+   RENDER.
+      DISPLAY SECTION ID "table"
+         WITH LAYOUT STACK
+         WITH PADDING LARGE.
+         DISPLAY LABEL "ITEMS SECTION".
+         DISPLAY HEADING-1 "Tabular data."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH INTRO.
+         DISPLAY TABLE USING LAYERS-TABLE
+            WITH COLUMNS "LAYER, COMMAND, WHO".
+      STOP SECTION.
+
+   STOP RUN.`,
+
+  'with-intent': `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   WITH-INTENT.
+   PAGE-TITLE.   "RECALL — WITH INTENT".
+
+ENVIRONMENT DIVISION.
+   CONFIGURATION SECTION.
+      VIEWPORT   RESPONSIVE.
+      COLOR-MODE DARK.
+   PALETTE SECTION.
+      COLOR-BG     #080808.
+      COLOR-TEXT   #f0f0f0.
+      COLOR-ACCENT #00ff41.
+      COLOR-BORDER #2a2a2a.
+   FONT SECTION.
+      FONT-PRIMARY IBM Plex Mono.
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 INTRO   PIC X(230) VALUE "WITH INTENT marks a section for AI expansion. The AI compositor reads the intent clause and fills in the DATA DIVISION and PROCEDURE DIVISION structure. It is the AI-native extension of the language.".
+      01 EXAMPLE PIC X(220) VALUE "An AI compositor receiving this source would expand the intent clause into concrete DATA fields and PROCEDURE statements — ready for recall compile. The source becomes the brief. The AI becomes the author.".
+
+PROCEDURE DIVISION.
+   RENDER-HERO.
+      DISPLAY SECTION ID "hero"
+         WITH LAYOUT STACK
+         WITH PADDING LARGE.
+         DISPLAY LABEL "AI-NATIVE".
+         DISPLAY HEADING-1 "WITH INTENT."
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH INTRO.
+      STOP SECTION.
+
+   RENDER-EXAMPLE.
+      DISPLAY SECTION ID "example"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM
+         WITH INTENT "Show a two-column comparison of human-authored vs AI-authored RECALL code, with a callout explaining when to use each approach.".
+         DISPLAY PARAGRAPH EXAMPLE.
+      STOP SECTION.
+
+   STOP RUN.`
+}
+
+// ── State ──────────────────────────────────────────────────────
+const editor      = document.getElementById('editor')
+const preview     = document.getElementById('preview')
+const status      = document.getElementById('status')
+const diagnostics = document.getElementById('diagnostics')
+const compileBtn  = document.getElementById('compile-btn')
+const copyBtn     = document.getElementById('copy-btn')
+let debounceTimer = null
+let currentPreset = 'hello'
+
+// ── Compile ────────────────────────────────────────────────────
+async function doCompile(source) {
+  compileBtn.disabled = true
+  setStatus('Compiling…', '')
+  clearDiagnostics()
+
+  const t0 = Date.now()
+  try {
+    const res  = await fetch(API, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ source }),
+    })
+    const data = await res.json()
+    const elapsed = Date.now() - t0
+
+    if (data.html) {
+      preview.srcdoc = data.html
+      setStatus(`Compiled in ${elapsed}ms`, 'ok')
+      if (data.diagnostics && data.diagnostics.length > 0) {
+        showDiagnostics(data.diagnostics)  // warnings only
+      }
+    } else {
+      setStatus('Compile error', 'err')
+      showDiagnostics(data.diagnostics || [{ code: 'ERR', severity: 'error', message: data.error || 'Unknown error', why: '' }])
+    }
+  } catch (err) {
+    setStatus('Network error', 'err')
+    showDiagnostics([{ code: 'NET', severity: 'error', message: 'Could not reach compile API', why: String(err) }])
+  } finally {
+    compileBtn.disabled = false
+  }
+}
+
+// ── Status helpers ─────────────────────────────────────────────
+function setStatus(msg, cls) {
+  status.textContent = msg
+  status.className   = 'status' + (cls ? ' ' + cls : '')
+}
+
+function clearDiagnostics() {
+  diagnostics.innerHTML = ''
+  diagnostics.classList.remove('visible')
+}
+
+function showDiagnostics(items) {
+  diagnostics.innerHTML = items.map(d => `
+    <div class="diag-row">
+      <span class="diag-code">${d.code}</span>
+      <span class="diag-msg">${d.message}${d.why ? ` — ${d.why}` : ''}</span>
+    </div>`).join('')
+  diagnostics.classList.add('visible')
+}
+
+// ── Debounce ───────────────────────────────────────────────────
+editor.addEventListener('input', () => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => doCompile(editor.value), 800)
+})
+
+// ── Compile button ─────────────────────────────────────────────
+compileBtn.addEventListener('click', () => {
+  clearTimeout(debounceTimer)
+  doCompile(editor.value)
+})
+
+// ── Copy button ────────────────────────────────────────────────
+copyBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(editor.value).then(() => {
+    copyBtn.textContent = 'Copied!'
+    copyBtn.classList.add('copied')
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy'
+      copyBtn.classList.remove('copied')
+    }, 1800)
+  })
+})
+
+// ── Tab key in editor ──────────────────────────────────────────
+editor.addEventListener('keydown', e => {
+  if (e.key === 'Tab') {
+    e.preventDefault()
+    const start = editor.selectionStart
+    const end   = editor.selectionEnd
+    editor.value = editor.value.slice(0, start) + '   ' + editor.value.slice(end)
+    editor.selectionStart = editor.selectionEnd = start + 3
+  }
+})
+
+// ── Preset buttons ─────────────────────────────────────────────
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.preset
+    if (key === currentPreset) return
+    currentPreset = key
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'))
+    btn.classList.add('active')
+    editor.value = PRESETS[key]
+    clearTimeout(debounceTimer)
+    doCompile(editor.value)
+  })
+})
+
+// ── Initial load ───────────────────────────────────────────────
+editor.value = PRESETS[currentPreset]
+doCompile(editor.value)
+</script>
+
+</body>
+</html>

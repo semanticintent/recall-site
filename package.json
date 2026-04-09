@@ -4,7 +4,7 @@
   "description": "RECALL documentation site — built in RECALL",
   "private": true,
   "scripts": {
-    "build": "recall build src/ --out public/ && cp static/_redirects public/_redirects"
+    "build": "recall build src/ --out public/ && cp static/_redirects public/_redirects && cp static/playground.html public/playground.html"
   },
   "dependencies": {
     "@semanticintent/recall-compiler": "^1.0.7"
