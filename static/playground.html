@@ -457,14 +457,18 @@ DATA DIVISION.
       01 CTA-HREF  PIC X(20)  VALUE "/docs.html".
    ITEMS SECTION.
       01 STATS.
-         05 S1-VALUE PIC X(6)  VALUE "65ms".
-         05 S1-LABEL PIC X(20) VALUE "Compile time".
-         05 S2-VALUE PIC X(4)  VALUE "0".
-         05 S2-LABEL PIC X(20) VALUE "Runtime deps".
-         05 S3-VALUE PIC X(4)  VALUE "124".
-         05 S3-LABEL PIC X(20) VALUE "Tests passing".
-         05 S4-VALUE PIC X(6)  VALUE "v1.0".
-         05 S4-LABEL PIC X(20) VALUE "Ships today".
+         05 S1.
+            10 STAT-VALUE PIC X(6)  VALUE "65ms".
+            10 STAT-LABEL PIC X(20) VALUE "Compile time".
+         05 S2.
+            10 STAT-VALUE PIC X(4)  VALUE "0".
+            10 STAT-LABEL PIC X(20) VALUE "Runtime deps".
+         05 S3.
+            10 STAT-VALUE PIC X(4)  VALUE "124".
+            10 STAT-LABEL PIC X(20) VALUE "Tests passing".
+         05 S4.
+            10 STAT-VALUE PIC X(6)  VALUE "v1.0".
+            10 STAT-LABEL PIC X(20) VALUE "Ships today".
 
 PROCEDURE DIVISION.
    RENDER-HERO.
