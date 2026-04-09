@@ -125,6 +125,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
   <button class="preset-btn" data-preset="data-table">DATA TABLE</button>
   <button class="preset-btn" data-preset="stat-grid">STAT-GRID</button>
   <button class="preset-btn" data-preset="card-list">CARD-LIST</button>
+  <button class="preset-btn" data-preset="bare">BARE</button>
   <button class="preset-btn" data-preset="with-intent">WITH INTENT</button>
 </div>
 
@@ -406,6 +407,22 @@ PROCEDURE DIVISION.
             WITH COLUMNS 3
             WITH HOVER-LIFT YES.
       STOP SECTION.
+
+   STOP RUN.`,
+
+  bare: `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   BARE.
+   AUTHOR.       SEMANTICINTENT.
+   DATE-WRITTEN. 2026-04-09.
+   PAGE-TITLE.   "Bare minimum.".
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 BODY PIC X(80) VALUE "The source is the program. The compiler does the rest.".
+
+PROCEDURE DIVISION.
+   RENDER.
+      DISPLAY PARAGRAPH BODY.
 
    STOP RUN.`,
 
