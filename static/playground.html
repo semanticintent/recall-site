@@ -83,6 +83,9 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 .compile-btn { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; background: var(--accent); color: var(--bg); border: none; padding: 8px 20px; cursor: pointer; font-weight: 600; transition: opacity 0.15s; }
 .compile-btn:hover { opacity: 0.85; }
 .compile-btn:disabled { opacity: 0.4; cursor: default; }
+.expand-btn { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; background: none; color: #d2a8ff; border: 1px solid rgba(210,168,255,0.4); padding: 7px 16px; cursor: pointer; font-weight: 500; transition: color 0.15s, border-color 0.15s, opacity 0.15s; }
+.expand-btn:hover { color: #e8c8ff; border-color: rgba(210,168,255,0.8); }
+.expand-btn:disabled { opacity: 0.4; cursor: default; }
 .status { font-size: 12px; color: var(--muted); opacity: 0.6; flex: 1; }
 .status.ok  { color: var(--accent); opacity: 1; }
 .status.err { color: #f87171; opacity: 1; }
@@ -149,6 +152,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 </div>
 
 <div class="compile-bar">
+  <button class="expand-btn" id="expand-btn" style="display:none">Expand ✦</button>
   <button class="compile-btn" id="compile-btn">Compile ▶</button>
   <span class="status" id="status">Ready.</span>
 </div>
@@ -156,8 +160,9 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 <div class="diagnostics" id="diagnostics"></div>
 
 <script>
-// ── API endpoint — update after Worker deploy ──────────────────
-const API = 'https://recall-api.semanticintent.dev/compile'
+// ── API endpoints ──────────────────────────────────────────────
+const API        = 'https://recall-api.semanticintent.dev/compile'
+const EXPAND_API = 'https://recall-api.semanticintent.dev/expand'
 
 // ── Preset source examples ─────────────────────────────────────
 const PRESETS = {
@@ -461,12 +466,9 @@ PROCEDURE DIVISION.
       STOP SECTION.
 
    RENDER-EXAMPLE.
-      DISPLAY SECTION ID "example"
-         WITH LAYOUT STACK
-         WITH PADDING MEDIUM
-         WITH INTENT "Show a two-column comparison of human-authored vs AI-authored RECALL code, with a callout explaining when to use each approach.".
-         DISPLAY PARAGRAPH EXAMPLE.
-      STOP SECTION.
+      DISPLAY CALLOUT
+         WITH INTENT "Show a highlighted note explaining when to use WITH INTENT vs writing RECALL manually."
+         WITH DATA INTRO, EXAMPLE.
 
    STOP RUN.`
 }
@@ -534,6 +536,7 @@ const preview     = document.getElementById('preview')
 const status      = document.getElementById('status')
 const diagnostics = document.getElementById('diagnostics')
 const compileBtn  = document.getElementById('compile-btn')
+const expandBtn   = document.getElementById('expand-btn')
 const copyBtn     = document.getElementById('copy-btn')
 let debounceTimer = null
 let currentPreset = 'hello'
@@ -581,6 +584,41 @@ async function doCompile(source) {
   }
 }
 
+// ── Expand button visibility ───────────────────────────────────
+function updateExpandBtn() {
+  expandBtn.style.display = /WITH INTENT\s+"/.test(editor.value) ? '' : 'none'
+}
+
+// ── Expand WITH INTENT via Workers AI ─────────────────────────
+async function doExpand() {
+  expandBtn.disabled = true
+  setStatus('Expanding with AI…', '')
+  clearDiagnostics()
+  try {
+    const res  = await fetch(EXPAND_API, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ source: editor.value }),
+    })
+    const data = await res.json()
+    if (data.expanded) {
+      editor.value = data.expanded
+      updateHighlight()
+      updateExpandBtn()
+      clearTimeout(debounceTimer)
+      doCompile(editor.value)
+    } else {
+      setStatus('Expand error', 'err')
+      showDiagnostics([{ code: 'EXP', severity: 'error', message: data.error || 'Expansion failed', why: '' }])
+    }
+  } catch (e) {
+    setStatus('Network error', 'err')
+    showDiagnostics([{ code: 'NET', severity: 'error', message: 'Could not reach expand API', why: String(e) }])
+  } finally {
+    expandBtn.disabled = false
+  }
+}
+
 // ── Status helpers ─────────────────────────────────────────────
 function setStatus(msg, cls) {
   status.textContent = msg
@@ -604,6 +642,7 @@ function showDiagnostics(items) {
 // ── Debounce + instant highlight ──────────────────────────────
 editor.addEventListener('input', () => {
   updateHighlight()
+  updateExpandBtn()
   clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => doCompile(editor.value), 800)
 })
@@ -612,6 +651,12 @@ editor.addEventListener('input', () => {
 compileBtn.addEventListener('click', () => {
   clearTimeout(debounceTimer)
   doCompile(editor.value)
+})
+
+// ── Expand button ──────────────────────────────────────────────
+expandBtn.addEventListener('click', () => {
+  clearTimeout(debounceTimer)
+  doExpand()
 })
 
 // ── Copy button ────────────────────────────────────────────────
@@ -648,6 +693,7 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
     btn.classList.add('active')
     editor.value = PRESETS[key]
     updateHighlight()
+    updateExpandBtn()
     clearTimeout(debounceTimer)
     doCompile(editor.value)
   })
@@ -656,6 +702,7 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
 // ── Initial load ───────────────────────────────────────────────
 editor.value = PRESETS[currentPreset]
 updateHighlight()
+updateExpandBtn()
 editor.focus()
 doCompile(editor.value)
 </script>
