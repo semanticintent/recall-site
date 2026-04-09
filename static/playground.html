@@ -133,7 +133,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
     </div>
     <div class="editor-wrap">
       <div id="editor-hl" class="editor-hl" aria-hidden="true"></div>
-      <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+      <textarea id="editor" spellcheck="false" autocorrect="off" autocapitalize="off" autofocus></textarea>
     </div>
   </div>
   <div class="preview-pane">
@@ -216,7 +216,7 @@ DATA DIVISION.
       01 TITLE-TEXT   PIC X(20)        VALUE "RECALL PIC Types".
       01 YEAR-VAL     PIC 9(4)         VALUE "1959".
       01 PRICE-VAL    PIC 9(4)V9(2)    VALUE "42.75".
-      01 FLAG-VAL     PIC X(3)         VALUE "YES".
+      01 FLAG-VAL     PIC X(5)         VALUE "YES".
       01 BODY-TEXT    PIC X(240)       VALUE "RECALL uses PIC (PICTURE) clauses from COBOL to declare field types and widths. PIC X is alphanumeric. PIC 9 is numeric. V is the implied decimal point. Width is the maximum character count.".
 
       01 CODE-EX      PIC X VALUE HEREDOC.
@@ -523,6 +523,7 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
 // ── Initial load ───────────────────────────────────────────────
 editor.value = PRESETS[currentPreset]
 updateHighlight()
+editor.focus()
 doCompile(editor.value)
 </script>
 
