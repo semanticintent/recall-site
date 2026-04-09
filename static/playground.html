@@ -608,7 +608,12 @@ async function doCompile(source) {
       preview.srcdoc = data.html
       setStatus(`Compiled in ${elapsed}ms`, 'ok')
       if (data.diagnostics && data.diagnostics.length > 0) {
-        showDiagnostics(data.diagnostics)  // warnings only
+        // Suppress W09 (unexpanded WITH INTENT) when the Expand button is visible —
+        // the button already communicates that expansion is available
+        const visible = data.diagnostics.filter(d =>
+          !(d.code === 'RCL-W09' && expandBtn.style.display !== 'none')
+        )
+        if (visible.length > 0) showDiagnostics(visible)
       }
     } else {
       setStatus('Compile error', 'err')
