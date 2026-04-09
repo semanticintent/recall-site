@@ -53,6 +53,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 .editor-pane { display: flex; flex-direction: column; border-right: 1px solid var(--border); min-height: 0; }
 .pane-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--border); background: var(--panel); flex-shrink: 0; }
 .pane-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); opacity: 0.5; }
+.pane-label code { font-family: var(--font-mono); font-size: 10px; color: var(--accent); background: rgba(0,255,65,0.07); padding: 2px 7px; border: 1px solid rgba(0,255,65,0.18); letter-spacing: 0; opacity: 1; }
 .copy-btn { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.5px; background: none; border: 1px solid var(--border); color: var(--muted); padding: 4px 10px; cursor: pointer; transition: color 0.15s, border-color 0.15s; }
 .copy-btn:hover { color: var(--text); border-color: var(--text); }
 .copy-btn.copied { color: var(--accent); border-color: var(--accent); }
@@ -130,7 +131,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 <div class="workspace">
   <div class="editor-pane">
     <div class="pane-header">
-      <span class="pane-label">Source — .rcl</span>
+      <span class="pane-label">Source — <code>.rcl</code></span>
       <button class="copy-btn" id="copy-btn">Copy</button>
     </div>
     <div class="editor-wrap">
@@ -140,7 +141,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
   </div>
   <div class="preview-pane">
     <div class="pane-header">
-      <span class="pane-label">Output — HTML</span>
+      <span class="pane-label">Output — <code>HTML</code></span>
     </div>
     <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
   </div>
