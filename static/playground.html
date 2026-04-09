@@ -86,6 +86,8 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 .expand-btn { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; background: none; color: #d2a8ff; border: 1px solid rgba(210,168,255,0.4); padding: 7px 16px; cursor: pointer; font-weight: 500; transition: color 0.15s, border-color 0.15s, opacity 0.15s; }
 .expand-btn:hover { color: #e8c8ff; border-color: rgba(210,168,255,0.8); }
 .expand-btn:disabled { opacity: 0.4; cursor: default; }
+.reset-btn { font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; background: none; color: rgba(210,168,255,0.5); border: 1px solid rgba(210,168,255,0.2); padding: 7px 16px; cursor: pointer; font-weight: 500; transition: color 0.15s, border-color 0.15s; }
+.reset-btn:hover { color: #d2a8ff; border-color: rgba(210,168,255,0.5); }
 .status { font-size: 12px; color: var(--muted); opacity: 0.6; flex: 1; }
 .status.ok  { color: var(--accent); opacity: 1; }
 .status.err { color: #f87171; opacity: 1; }
@@ -168,6 +170,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
 
 <div class="compile-bar">
   <button class="expand-btn" id="expand-btn" style="display:none">Expand ✦</button>
+  <button class="reset-btn"  id="reset-btn"  style="display:none">Reset ↺</button>
   <button class="compile-btn" id="compile-btn">Compile ▶</button>
   <span class="status" id="status">Ready.</span>
 </div>
@@ -569,8 +572,10 @@ const expandBtn   = document.getElementById('expand-btn')
 const copyBtn     = document.getElementById('copy-btn')
 const jsonPanel   = document.getElementById('json-panel')
 const jsonEditor  = document.getElementById('json-editor')
-let debounceTimer = null
-let currentPreset = 'hello'
+const resetBtn    = document.getElementById('reset-btn')
+let debounceTimer    = null
+let currentPreset    = 'hello'
+let preExpandSource  = null   // saved before AI expansion; null means no expansion done
 
 // ── Highlight update + scroll sync ────────────────────────────
 function updateHighlight() {
@@ -630,13 +635,16 @@ function getJsonData() {
   try { return JSON.parse(text) } catch { return null }
 }
 
-// ── Expand button visibility ───────────────────────────────────
+// ── Expand / Reset button visibility ──────────────────────────
 function updateExpandBtn() {
-  expandBtn.style.display = /WITH INTENT\s+"/.test(editor.value) ? '' : 'none'
+  const hasIntent = /WITH INTENT\s+"/.test(editor.value)
+  expandBtn.style.display = hasIntent ? '' : 'none'
+  resetBtn.style.display  = (!hasIntent && preExpandSource !== null) ? '' : 'none'
 }
 
 // ── Expand WITH INTENT via Workers AI ─────────────────────────
 async function doExpand() {
+  preExpandSource    = editor.value   // save so Reset can restore it
   expandBtn.disabled = true
   setStatus('Expanding with AI…', '')
   clearDiagnostics()
@@ -688,6 +696,7 @@ function showDiagnostics(items) {
 
 // ── Debounce + instant highlight ──────────────────────────────
 editor.addEventListener('input', () => {
+  preExpandSource = null   // manual edit clears saved source
   updateHighlight()
   updateExpandBtn()
   updateJsonPanel()
@@ -705,6 +714,18 @@ compileBtn.addEventListener('click', () => {
 expandBtn.addEventListener('click', () => {
   clearTimeout(debounceTimer)
   doExpand()
+})
+
+// ── Reset button — restore pre-expansion source ───────────────
+resetBtn.addEventListener('click', () => {
+  if (!preExpandSource) return
+  editor.value    = preExpandSource
+  preExpandSource = null
+  updateHighlight()
+  updateExpandBtn()
+  updateJsonPanel()
+  clearTimeout(debounceTimer)
+  doCompile(editor.value)
 })
 
 // ── Copy button ────────────────────────────────────────────────
@@ -736,7 +757,8 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const key = btn.dataset.preset
     if (key === currentPreset) return
-    currentPreset = key
+    currentPreset   = key
+    preExpandSource = null
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'))
     btn.classList.add('active')
     editor.value = PRESETS[key]
