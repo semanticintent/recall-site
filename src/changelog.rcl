@@ -1,0 +1,73 @@
+IDENTIFICATION DIVISION.
+   PROGRAM-ID.   "dev-changelog".
+   AUTHOR.       "Michael Shatny".
+   DATE-WRITTEN. "2026-04-11".
+   PAGE-TITLE.   "Michael Shatny — Changelog".
+   DESCRIPTION.  "A living record of shipped things, compiled from changelog.json.".
+
+ENVIRONMENT DIVISION.
+   COPY FROM "theme.rcpy".
+
+DATA DIVISION.
+   LOAD FROM "changelog.json".
+
+PROCEDURE DIVISION.
+
+   RENDER-HEADER.
+      DISPLAY SECTION ID "header"
+         WITH LAYOUT CENTERED
+         WITH PADDING LARGE.
+         DISPLAY HEADING-1 AUTHOR.
+         DISPLAY LABEL HANDLE.
+         DISPLAY PARAGRAPH TAGLINE.
+      STOP SECTION.
+
+   RENDER-PROJECTS.
+      DISPLAY SECTION ID "projects"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "Projects".
+         DISPLAY HEADING-2 "Active Work".
+         DISPLAY CARD-LIST USING PROJECTS
+            WITH STYLE BORDERED
+            WITH COLUMNS 2
+            WITH HOVER-LIFT YES.
+      STOP SECTION.
+
+   RENDER-LOG.
+      DISPLAY SECTION ID "log"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "Ship Log".
+         DISPLAY HEADING-2 "What Shipped".
+         DISPLAY CALLOUT "Updated in source. Compiled to this page. Push to publish."
+            WITH TYPE NOTE.
+         DISPLAY TABLE LOG
+            WITH COLUMNS "Date, Project, Change, Status"
+            WITH STRIPED YES.
+      STOP SECTION.
+
+   RENDER-ABOUT.
+      DISPLAY SECTION ID "about"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL "About This Page".
+         DISPLAY HEADING-2 "How It Works".
+         DISPLAY PARAGRAPH "This changelog is a RECALL program. The data lives in changelog.json — plain text, edit it anywhere. The layout lives in changelog.rcl. Run recall compile to rebuild. No CMS. No build pipeline beyond one command.".
+         DISPLAY CALLOUT "recall compile changelog.rcl --out changelog.html"
+            WITH TYPE INFO.
+      STOP SECTION.
+
+   RENDER-FOOTER.
+      DISPLAY FOOTER "Michael Shatny"
+         WITH ALIGN CENTER
+         WITH LINKS "RECALL https://recall.semanticintent.dev, semanticintent.dev https://semanticintent.dev, GitHub https://github.com/semanticintent".
+      STOP SECTION.
+
+   STOP RUN.
+
+AUDIT DIVISION.
+   CREATED-BY.   Human.
+   CREATED-DATE. 2026-04-11.
+   CHANGE-LOG.
+      2026-04-11  Changelog page created. Human. "Michael Shatny. Initial compile and deploy.".

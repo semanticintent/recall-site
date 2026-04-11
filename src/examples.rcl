@@ -34,6 +34,11 @@ DATA DIVISION.
       01 EX4-BODY     PIC X(200) VALUE "Copybooks can declare an ACCEPTS contract. Load the component in COMPONENT DIVISION, then use DISPLAY WITH DATA to bind values. This is the @semanticintent/recall-ui pattern.".
       01 EX4-CODE     PIC X(649) VALUE "* npm install @semanticintent/recall-ui\n\nENVIRONMENT DIVISION.\n   COPY FROM @semanticintent/recall-ui/themes/dark.rcpy.\n\nCOMPONENT DIVISION.\n   COPY FROM @semanticintent/recall-ui/components/nav.rcpy.\n\nDATA DIVISION.\n   ITEMS SECTION.\n      01 NAV-ITEMS.\n         05 NAV-ITEM-1      PIC X(20) VALUE \"HOME\".\n         05 NAV-ITEM-1-HREF PIC X(80) VALUE \"/index.html\".\n         05 NAV-ITEM-2      PIC X(20) VALUE \"ABOUT\".\n         05 NAV-ITEM-2-HREF PIC X(80) VALUE \"/about.html\".\n\nPROCEDURE DIVISION.\n\n   RENDER-NAV.\n      DISPLAY SITE-NAV\n         WITH DATA SITE-LOGO \"MY SITE\", NAV-ITEMS NAV-ITEMS.\n\n   STOP RUN.".
 
+      01 EX6-LABEL    PIC X(30)  VALUE "EXAMPLE 06 — LIVE CHANGELOG".
+      01 EX6-HEAD     PIC X(50)  VALUE "A personal changelog powered by LOAD FROM.".
+      01 EX6-BODY     PIC X(260) VALUE "LOAD FROM reads a JSON file at compile time and generates WORKING-STORAGE scalars and ITEMS groups automatically. Update the JSON, run recall compile, push. No template engine. No CMS. The source knows where its data comes from.".
+      01 EX6-CODE     PIC X(340) VALUE "DATA DIVISION.\n   LOAD FROM \"changelog.json\".\n\nPROCEDURE DIVISION.\n\n   RENDER-LOG.\n      DISPLAY SECTION ID \"log\"\n         WITH LAYOUT STACK.\n         DISPLAY TABLE LOG\n            WITH COLUMNS \"Date, Project, Change, Status\"\n            WITH STRIPED YES.\n      STOP SECTION.\n\n   STOP RUN.".
+
       01 EX5-LABEL    PIC X(30)  VALUE "EXAMPLE 05 — DOCS LAYOUT".
       01 EX5-HEAD     PIC X(40)  VALUE "Sidebar navigation for documentation.".
       01 EX5-BODY     PIC X(215) VALUE "LAYOUT SIDEBAR creates a two-column grid. SIDEBAR-NAV reads a nested ITEMS group — each 05-level is a navigation section with a GROUP-LABEL and NAV-LINK pairs. Content sections nest inside the SIDEBAR section.".
@@ -104,6 +109,23 @@ PROCEDURE DIVISION.
             WITH LANGUAGE "recall".
          DISPLAY CALLOUT "ACCEPTS declares the component contract. WITH DATA satisfies it. The component defines the interface — the program provides the values."
             WITH TYPE NOTE.
+      STOP SECTION.
+
+   RENDER-EX6.
+      DISPLAY SECTION ID "ex6"
+         WITH LAYOUT STACK
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL EX6-LABEL.
+         DISPLAY HEADING-2 EX6-HEAD
+            WITH STYLE MONO.
+         DISPLAY PARAGRAPH EX6-BODY.
+         DISPLAY CODE-BLOCK EX6-CODE
+            WITH LANGUAGE "recall".
+         DISPLAY CALLOUT "This is a live example — view the compiled output at /changelog.html. Update changelog.json and recompile to publish changes."
+            WITH TYPE TIP.
+         DISPLAY BUTTON "View Live Changelog"
+            ON-CLICK GOTO "/changelog.html"
+            WITH STYLE PRIMARY.
       STOP SECTION.
 
    RENDER-EX5.

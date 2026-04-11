@@ -1,0 +1,82 @@
+{
+  "author": "Michael Shatny",
+  "handle": "@semanticintent",
+  "tagline": "Building languages, tools, and publishing infrastructure. This page compiles from changelog.rcl.",
+  "started": "2026-01-12",
+  "projects": [
+    {
+      "title": "RECALL Compiler",
+      "desc": "COBOL-inspired publishing language for the web. Compiles .rcl source to self-contained HTML. v1.1.0 live.",
+      "tag": "OSS",
+      "href": "https://recall.semanticintent.dev"
+    },
+    {
+      "title": "EMBER",
+      "desc": "A structured markup language designed for AI agents — the third reader between humans and machines.",
+      "tag": "Language",
+      "href": "https://semanticintent.dev/writing/ember-language-for-ai-agents"
+    },
+    {
+      "title": "StratIQX",
+      "desc": "6D cascade analysis case study library. 228 cases published. CAL-driven intelligence framework.",
+      "tag": "Research",
+      "href": "https://stratiqx.com"
+    },
+    {
+      "title": "This Page",
+      "desc": "A live changelog compiled from changelog.rcl using RECALL. Update the JSON, run recall compile, push.",
+      "tag": "Meta",
+      "href": "#about"
+    }
+  ],
+  "log": [
+    {
+      "date": "2026-04-11",
+      "project": "RECALL",
+      "change": "AUDIT DIVISION live. Authorship is now a compile-time constraint.",
+      "status": "Shipped"
+    },
+    {
+      "date": "2026-04-11",
+      "project": "recall-site",
+      "change": "This changelog page. First compile ran clean.",
+      "status": "Shipped"
+    },
+    {
+      "date": "2026-04-10",
+      "project": "RECALL",
+      "change": "recall-lsp v0.1.0 published. LSP diagnostics, hover, autocomplete.",
+      "status": "Shipped"
+    },
+    {
+      "date": "2026-04-09",
+      "project": "recall-site",
+      "change": "WITH INTENT expand live in playground via Workers AI.",
+      "status": "Shipped"
+    },
+    {
+      "date": "2026-04-07",
+      "project": "RECALL",
+      "change": "recall diff — AST-level semantic diff with --suggest-audit.",
+      "status": "Shipped"
+    },
+    {
+      "date": "2026-04-06",
+      "project": "RECALL",
+      "change": "recall-compiler v1.1.0. AUDIT DIVISION spec complete.",
+      "status": "Shipped"
+    },
+    {
+      "date": "2026-04-01",
+      "project": "EMBER",
+      "change": "EMBER language post published. The third reader framing.",
+      "status": "Shipped"
+    },
+    {
+      "date": "2026-03-29",
+      "project": "StratIQX",
+      "change": "Case study UC-228 published. Creator economy cluster complete.",
+      "status": "Shipped"
+    }
+  ]
+}
