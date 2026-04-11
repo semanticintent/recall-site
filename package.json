@@ -7,6 +7,6 @@
     "build": "recall build src/ --out public/ && cp static/_redirects public/_redirects && cp static/playground.html public/playground.html"
   },
   "dependencies": {
-    "@semanticintent/recall-compiler": "^1.0.7"
+    "@semanticintent/recall-compiler": "^1.1.0"
   }
 }

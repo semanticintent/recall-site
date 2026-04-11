@@ -14,14 +14,14 @@ DATA DIVISION.
 
       * ── Section bodies ────────────────────────────────────
       01 INTRO-BODY      PIC X(240) VALUE "RECALL is a declarative web interface language with COBOL-inspired syntax. It compiles `.rcl` source files to self-contained, zero-dependency HTML. Every page embeds its source in an HTML comment — view source, see origin.".
-      01 DIVISIONS-BODY  PIC X(200) VALUE "Every RECALL program has exactly five divisions, declared in order. Borrowed directly from COBOL — explicit, readable, non-negotiable. COMPONENT DIVISION is optional; all others are required.".
+      01 DIVISIONS-BODY  PIC X(220) VALUE "Every RECALL program has up to six divisions, declared in order. Borrowed directly from COBOL — explicit, readable, non-negotiable. COMPONENT and AUDIT DIVISION are optional; all others are required.".
       01 PIC-BODY        PIC X(220) VALUE "Every DATA DIVISION field carries a PIC type. The compiler validates every DISPLAY statement against the element's type contract — wrong type, wrong format, no output. Run `recall schema` to query the live registry.".
       01 ELEMENTS-BODY   PIC X(160) VALUE "RECALL provides 20 built-in elements invoked with DISPLAY. Run `recall schema` to query the live element registry from the installed compiler.".
       01 COPY-BODY       PIC X(240) VALUE "Copybooks use the `.rcpy` extension — a reference to COBOL's `.cpy` format. They are never compiled standalone; only COPY FROM'd into `.rcl` programs at compile time. `recall build` skips `.rcpy` files automatically.".
       01 COMPONENTS-BODY PIC X(210) VALUE "Components are reusable layout fragments defined in COMPONENT DIVISION. Each declares an ACCEPTS list — the DATA DIVISION field names it expects. Callers bind fields with WITH DATA at invocation.".
       01 VALUE-LANG-BODY PIC X(294) VALUE "Four features modernise the data layer. VALUE BLOCK supports multi-line prose strings. VALUE HEREDOC preserves raw content — code examples, RECALL syntax, embedded quotes. RECORD types define reusable group shapes expanded at compile time. COMMENT clauses attach intent metadata for AI tooling.".
       01 LOAD-BODY       PIC X(240) VALUE "LOAD FROM reads a JSON or CSV file at compile time and injects its contents into the DATA DIVISION. Scalars become WORKING-STORAGE fields. Arrays become ITEMS groups. No runtime — values are baked into the compiled HTML.".
-      01 DIAG-BODY       PIC X(240) VALUE "RECALL enforces 29 structured diagnostic codes. Each code is stable, searchable, and documentable. If a program compiles, it is valid. If not, the compiler tells you exactly what is wrong, where, and how to fix it.".
+      01 DIAG-BODY       PIC X(240) VALUE "RECALL enforces 33 structured diagnostic codes. Each code is stable, searchable, and documentable. If a program compiles, it is valid. If not, the compiler tells you exactly what is wrong, where, and how to fix it.".
       01 STRICT-BODY     PIC X(250) VALUE "Strict mode promotes all warnings to errors — zero tolerance for CI pipelines. Machine-readable JSON output includes source lines and caret strings so editor integrations and AI tools can render diagnostics without parsing ANSI sequences.".
       01 CLI-BODY        PIC X(280) VALUE "The RECALL CLI provides commands for compilation, validation, scaffolding, auto-fix, history diffing, and introspection. All commands accept `.rcl` files. Copybooks (`.rcpy`) are resolved automatically during compilation.".
       01 LIB-BODY        PIC X(280) VALUE "@semanticintent/recall-ui is the standard component library. Install once and use `recall scaffold` to generate a working .rcl from any component — or COPY FROM its `.rcpy` files directly. Includes the dark theme, nav, hero, stat-section, card-section, and footer.".
@@ -31,6 +31,10 @@ DATA DIVISION.
       01 CRD-BODY        PIC X(290) VALUE "The Common Record Description validates field agreement across three pipeline layers: inputSchema (author-facing), brief JSON (storage), and DATA DIVISION (compiler-facing). `recall crd` catches undefined fields, PIC X truncations, and group cardinality mismatches before compilation.".
 
       01 MANIFEST-BODY   PIC X(310) VALUE "The Pipeline Manifest assembles all four schema layers into one machine-readable payload — Language Schema, Component Manifest, Common Record Description, and Compositor Contract. `recall manifest --json` is the single read an AI orchestrator needs before touching anything in the pipeline.".
+
+      01 AUDIT-DIV-BODY   PIC X(360) VALUE "AUDIT DIVISION is an optional sixth division that records the provenance of a RECALL program. CREATED-BY declares the author kind — Human, AI compositor, or AI agent. CREATED-DATE is an ISO 8601 date. CHANGE-LOG records dated entries with author and description. The audit trail compiles into a structured HTML comment block invisible to readers.".
+
+      01 DIFF-BODY        PIC X(350) VALUE "recall diff performs a semantic AST diff between two .rcl sources — not a text diff. Compares DATA DIVISION fields (added, removed, PIC and value changes), PROCEDURE DIVISION statements, and IDENTIFICATION metadata. Supports two-file comparison and git revision syntax. Use --suggest-audit to generate a CHANGE-LOG entry from the diff output.".
 
       01 WITH-INTENT-BODY PIC X(366) VALUE "WITH INTENT annotates a DISPLAY statement with natural language intent for an AI compositor. Before expansion it compiles as a placeholder HTML comment (RCL-W09). Run `recall expand` to call the compositor — output is validated by the full compiler pipeline before writing. The compositor receives live schema, DATA DIVISION fields, COMMENT annotations, and palette.".
 
@@ -142,7 +146,13 @@ recall history my-site.rcl
 recall history my-site.rcl --commits 5
 END HEREDOC.
 
-      01 STATS-EX        PIC X(40)  VALUE "recall stats my-site.rcl".
+      01 STATS-EX        PIC X(240) VALUE HEREDOC.
+recall stats my-site.rcl
+recall stats my-site.rcl --json
+recall stats                     * pipeline aggregate — reads index.json
+recall stats --json
+recall stats --index path/to/index.json
+END HEREDOC.
 
       01 SCHEMA-EX       PIC X(120) VALUE HEREDOC.
 recall schema             * list all elements and PIC types
@@ -177,6 +187,29 @@ recall manifest
 recall manifest --json
 recall manifest --layer crd
 recall manifest --json --plugin @stratiqx/recall-components
+END HEREDOC.
+
+      01 AUDIT-DIV-EX    PIC X VALUE HEREDOC.
+AUDIT DIVISION.
+   CREATED-BY.   Human.
+   CREATED-DATE. 2026-04-06.
+   CHANGE-LOG.
+      2026-04-08 "Human"         "Updated hero copy for launch.".
+      2026-04-10 "AI agent"      "Added STAT-GRID section via recall expand.".
+      2026-04-11 "AI compositor" "Rewrote WITH INTENT CALLOUT block.".
+END HEREDOC.
+
+      01 DIFF-EX         PIC X(220) VALUE HEREDOC.
+recall diff v1.rcl v2.rcl
+recall diff HEAD~1 HEAD page.rcl
+recall diff --format json v1.rcl v2.rcl
+recall diff HEAD~1 HEAD page.rcl --suggest-audit
+END HEREDOC.
+
+      01 AUDIT-CMD-EX    PIC X(160) VALUE HEREDOC.
+recall audit page.rcl
+recall audit page.rcl --since 2026-04-08
+recall audit page.rcl --format json
 END HEREDOC.
 
       01 DATA-COPY-EX    PIC X(200) VALUE HEREDOC.
@@ -281,6 +314,10 @@ END HEREDOC.
             10 COL-DIV  PIC X(30)  VALUE "PROCEDURE DIVISION".
             10 COL-REQ  PIC X(10)  VALUE "REQUIRED".
             10 COL-DESC PIC X(100) VALUE "Render logic — named sections with DISPLAY statements. Must end with STOP RUN.".
+         05 ROW-6.
+            10 COL-DIV  PIC X(30)  VALUE "AUDIT DIVISION".
+            10 COL-REQ  PIC X(10)  VALUE "OPTIONAL".
+            10 COL-DESC PIC X(145) VALUE "Provenance — CREATED-BY (Human | AI compositor | AI agent), CREATED-DATE (ISO 8601), CHANGE-LOG entries. Compiles into a structured HTML comment.".
 
       * ── PIC type reference table ───────────────────────────
       01 PIC-TYPE-REF.
@@ -510,6 +547,18 @@ END HEREDOC.
             10 COL-CODE PIC X(12) VALUE "RCL-027".
             10 COL-CAT  PIC X(20) VALUE "structural".
             10 COL-DESC PIC X(80) VALUE "WITH INTENT expansion failed — compositor returned invalid RECALL.".
+         05 ERR-28.
+            10 COL-CODE PIC X(12) VALUE "RCL-028".
+            10 COL-CAT  PIC X(20) VALUE "format".
+            10 COL-DESC PIC X(80) VALUE "AUDIT DIVISION CREATED-DATE is not a valid ISO 8601 date (YYYY-MM-DD).".
+         05 ERR-29.
+            10 COL-CODE PIC X(12) VALUE "RCL-029".
+            10 COL-CAT  PIC X(20) VALUE "structural".
+            10 COL-DESC PIC X(85) VALUE "AUDIT CHANGE-LOG entry date is earlier than CREATED-DATE — impossible provenance.".
+         05 ERR-30.
+            10 COL-CODE PIC X(12) VALUE "RCL-030".
+            10 COL-CAT  PIC X(20) VALUE "value-constraint".
+            10 COL-DESC PIC X(97) VALUE "AUDIT CREATED-BY or CHANGE-LOG author is not a permitted kind (Human | AI compositor | AI agent).".
 
       * ── Warning reference table ────────────────────────────
       01 WARN-REF.
@@ -549,6 +598,10 @@ END HEREDOC.
             10 COL-CODE PIC X(12) VALUE "RCL-W09".
             10 COL-CAT  PIC X(20) VALUE "structural".
             10 COL-DESC PIC X(80) VALUE "WITH INTENT clause not yet expanded — renders as HTML placeholder comment.".
+         05 WARN-11.
+            10 COL-CODE PIC X(12) VALUE "RCL-W11".
+            10 COL-CAT  PIC X(20) VALUE "structural".
+            10 COL-DESC PIC X(87) VALUE "AUDIT DIVISION present but CHANGE-LOG is empty — consider logging the initial creation.".
 
       * ── Sidebar navigation ─────────────────────────────────
       01 DOCS-NAV.
@@ -578,6 +631,8 @@ END HEREDOC.
             10 NAV-LINK-8-HREF PIC X(80) VALUE "#data-copy".
             10 NAV-LINK-9      PIC X(30) VALUE "WITH INTENT".
             10 NAV-LINK-9-HREF PIC X(80) VALUE "#with-intent".
+            10 NAV-LINK-10      PIC X(30) VALUE "AUDIT DIVISION".
+            10 NAV-LINK-10-HREF PIC X(80) VALUE "#audit-division".
          05 NAV-SECTION-3.
             10 GROUP-LABEL     PIC X(30) VALUE "DIAGNOSTICS".
             10 NAV-LINK-1      PIC X(30) VALUE "Error Codes".
@@ -592,6 +647,8 @@ END HEREDOC.
             10 NAV-LINK-2-HREF PIC X(80) VALUE "#crd".
             10 NAV-LINK-3      PIC X(30) VALUE "Manifest".
             10 NAV-LINK-3-HREF PIC X(80) VALUE "#manifest".
+            10 NAV-LINK-4      PIC X(30) VALUE "Diff".
+            10 NAV-LINK-4-HREF PIC X(80) VALUE "#diff".
          05 NAV-SECTION-5.
             10 GROUP-LABEL     PIC X(30) VALUE "ECOSYSTEM".
             10 NAV-LINK-1      PIC X(30) VALUE "Component Library".
@@ -654,7 +711,7 @@ PROCEDURE DIVISION.
             DISPLAY PARAGRAPH DIVISIONS-BODY.
             DISPLAY TABLE USING DIVISION-REF
                WITH COLUMNS "DIVISION, REQUIRED, DESCRIPTION".
-            DISPLAY CALLOUT "Divisions must appear in order: IDENTIFICATION, ENVIRONMENT, DATA, COMPONENT, PROCEDURE. Omitting COMPONENT DIVISION is valid. Omitting any other aborts compilation."
+            DISPLAY CALLOUT "Divisions must appear in order: IDENTIFICATION, ENVIRONMENT, DATA, COMPONENT, PROCEDURE, AUDIT. COMPONENT and AUDIT are optional. Omitting any required division aborts compilation."
                WITH TYPE WARNING.
          STOP SECTION.
 
@@ -807,6 +864,24 @@ PROCEDURE DIVISION.
                WITH TYPE TIP.
          STOP SECTION.
 
+         * ── AUDIT DIVISION ───────────────────────────────────
+         DISPLAY SECTION ID "audit-division"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "LANGUAGE".
+            DISPLAY HEADING-2 "AUDIT DIVISION"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH AUDIT-DIV-BODY.
+            DISPLAY CODE-BLOCK AUDIT-DIV-EX
+               WITH LANGUAGE "RECALL".
+            DISPLAY CALLOUT "CREATED-BY accepts exactly three values: Human, AI compositor, or AI agent. Any other value triggers RCL-030 at compile time."
+               WITH TYPE WARNING.
+            DISPLAY CALLOUT "The full audit trail is embedded in the compiled HTML as a structured comment. It is invisible to readers but visible in view-source and to tools that parse the output."
+               WITH TYPE NOTE.
+            DISPLAY CALLOUT "RCL-028 fires for malformed CREATED-DATE. RCL-029 fires when a CHANGE-LOG entry date precedes CREATED-DATE. RCL-W11 fires when AUDIT DIVISION is present but CHANGE-LOG is empty."
+               WITH TYPE TIP.
+         STOP SECTION.
+
          * ── Error Codes ──────────────────────────────────────
          DISPLAY SECTION ID "error-codes"
             WITH LAYOUT STACK
@@ -823,7 +898,7 @@ PROCEDURE DIVISION.
             DISPLAY HEADING-3 "Warnings — shown but compilation continues".
             DISPLAY TABLE USING WARN-REF
                WITH COLUMNS "CODE, CATEGORY, DESCRIPTION".
-            DISPLAY CALLOUT "All 29 codes are actively enforced. Silent failures are errors. If a program compiles, it is valid."
+            DISPLAY CALLOUT "All 33 codes are actively enforced. Silent failures are errors. If a program compiles, it is valid."
                WITH TYPE TIP.
          STOP SECTION.
 
@@ -881,9 +956,11 @@ PROCEDURE DIVISION.
             DISPLAY CODE-BLOCK HISTORY-EX
                WITH LANGUAGE "bash".
 
-            DISPLAY HEADING-3 "recall stats — orientation snapshot".
+            DISPLAY HEADING-3 "recall stats — orientation snapshot and pipeline telemetry".
             DISPLAY CODE-BLOCK STATS-EX
                WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "Run recall stats with no file from the case-studies directory to aggregate compile_ms, coverage_pct, and truncations across all compiled cases in index.json."
+               WITH TYPE TIP.
 
             DISPLAY HEADING-3 "recall schema — live element registry".
             DISPLAY CODE-BLOCK SCHEMA-EX
@@ -918,6 +995,18 @@ PROCEDURE DIVISION.
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall manifest assembles all four pipeline schema layers into one payload. Language schema is always inlined. Pass --plugin to populate the component list. Use --layer to inspect a single layer."
                WITH TYPE TIP.
+
+            DISPLAY HEADING-3 "recall diff — semantic AST diff".
+            DISPLAY CODE-BLOCK DIFF-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall diff compares at the AST level — field renames, PIC type changes, VALUE changes, and added or removed DISPLAY statements are all individually reported. --suggest-audit prints a ready-made CHANGE-LOG entry."
+               WITH TYPE NOTE.
+
+            DISPLAY HEADING-3 "recall audit — print AUDIT DIVISION history".
+            DISPLAY CODE-BLOCK AUDIT-CMD-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall audit reads the AUDIT DIVISION from a .rcl source and prints the full provenance log. --since filters by date. --format json outputs machine-readable entries."
+               WITH TYPE NOTE.
          STOP SECTION.
 
          * ── Component Library ────────────────────────────────
