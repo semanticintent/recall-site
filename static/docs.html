@@ -991,24 +991,48 @@
 *             DISPLAY CALLOUT "recall expand calls the Anthropic API with a structured payload — intent, DATA DIVISION fields, COMMENT annotations, palette, and component registry. The expanded source is validated by the full compiler pipeline before writing. Requires ANTHROPIC_API_KEY."
 *                WITH TYPE NOTE.
 *
-*             DISPLAY HEADING-3 "recall crd — validate Common Record Description".
+*          STOP SECTION.
+*
+*          * ── CRD ─────────────────────────────────────────────
+*          DISPLAY SECTION ID "crd"
+*             WITH LAYOUT STACK
+*             WITH PADDING MEDIUM.
+*             DISPLAY LABEL "CLI".
+*             DISPLAY HEADING-2 "recall crd"
+*                WITH STYLE MONO.
+*             DISPLAY PARAGRAPH CRD-BODY.
 *             DISPLAY CODE-BLOCK CRD-EX
 *                WITH LANGUAGE "bash".
 *             DISPLAY CALLOUT "recall crd validates field agreement across three pipeline layers — brief JSON, DATA DIVISION, and inputSchema. Four diagnostic codes: CRD-001 (unknown field), CRD-002 (missing field), CRD-003 (truncation), CRD-004 (cardinality mismatch). Use --strict in CI."
 *                WITH TYPE NOTE.
+*          STOP SECTION.
 *
-*             DISPLAY HEADING-3 "recall manifest — unified AI entry point".
+*          * ── Manifest ─────────────────────────────────────────
+*          DISPLAY SECTION ID "manifest"
+*             WITH LAYOUT STACK
+*             WITH PADDING MEDIUM.
+*             DISPLAY LABEL "CLI".
+*             DISPLAY HEADING-2 "recall manifest"
+*                WITH STYLE MONO.
+*             DISPLAY PARAGRAPH MANIFEST-BODY.
 *             DISPLAY CODE-BLOCK MANIFEST-EX
 *                WITH LANGUAGE "bash".
 *             DISPLAY CALLOUT "recall manifest assembles all four pipeline schema layers into one payload. Language schema is always inlined. Pass --plugin to populate the component list. Use --layer to inspect a single layer."
 *                WITH TYPE TIP.
+*          STOP SECTION.
 *
-*             DISPLAY HEADING-3 "recall diff — semantic AST diff".
+*          * ── Diff ─────────────────────────────────────────────
+*          DISPLAY SECTION ID "diff"
+*             WITH LAYOUT STACK
+*             WITH PADDING MEDIUM.
+*             DISPLAY LABEL "CLI".
+*             DISPLAY HEADING-2 "recall diff"
+*                WITH STYLE MONO.
+*             DISPLAY PARAGRAPH DIFF-BODY.
 *             DISPLAY CODE-BLOCK DIFF-EX
 *                WITH LANGUAGE "bash".
 *             DISPLAY CALLOUT "recall diff compares at the AST level — field renames, PIC type changes, VALUE changes, and added or removed DISPLAY statements are all individually reported. --suggest-audit prints a ready-made CHANGE-LOG entry."
 *                WITH TYPE NOTE.
-*
 *             DISPLAY HEADING-3 "recall audit — print AUDIT DIVISION history".
 *             DISPLAY CODE-BLOCK AUDIT-CMD-EX
 *                WITH LANGUAGE "bash".
@@ -2022,7 +2046,13 @@ recall expand page.rcl --out ./expanded/</pre>
   <div class="recall-callout-label">NOTE</div>
   <p>recall expand calls the Anthropic API with a structured payload — intent, DATA DIVISION fields, COMMENT annotations, palette, and component registry. The expanded source is validated by the full compiler pipeline before writing. Requires ANTHROPIC_API_KEY.</p>
 </div>
-  <h3>recall crd — validate Common Record Description</h3>
+  </div>
+</section>
+    <section id="crd" class="padding-medium">
+  <div class="container layout-stack">
+  <div class="recall-label">CLI</div>
+  <h2 class="style-mono">recall crd</h2>
+  <p>The Common Record Description validates field agreement across three pipeline layers: inputSchema (author-facing), brief JSON (storage), and DATA DIVISION (compiler-facing). <code>recall crd</code> catches undefined fields, PIC X truncations, and group cardinality mismatches before compilation.</p>
   <div class="code-block-wrap">
   <div class="code-block-header">
     <div class="code-block-dots"><span></span><span></span><span></span></div>
@@ -2039,7 +2069,13 @@ recall crd page.rcl --against brief.json --strict</pre>
   <div class="recall-callout-label">NOTE</div>
   <p>recall crd validates field agreement across three pipeline layers — brief JSON, DATA DIVISION, and inputSchema. Four diagnostic codes: CRD-001 (unknown field), CRD-002 (missing field), CRD-003 (truncation), CRD-004 (cardinality mismatch). Use --strict in CI.</p>
 </div>
-  <h3>recall manifest — unified AI entry point</h3>
+  </div>
+</section>
+    <section id="manifest" class="padding-medium">
+  <div class="container layout-stack">
+  <div class="recall-label">CLI</div>
+  <h2 class="style-mono">recall manifest</h2>
+  <p>The Pipeline Manifest assembles all four schema layers into one machine-readable payload — Language Schema, Component Manifest, Common Record Description, and Compositor Contract. <code>recall manifest --json</code> is the single read an AI orchestrator needs before touching anything in the pipeline.</p>
   <div class="code-block-wrap">
   <div class="code-block-header">
     <div class="code-block-dots"><span></span><span></span><span></span></div>
@@ -2057,7 +2093,13 @@ recall manifest --json --plugin @stratiqx/recall-components</pre>
   <div class="recall-callout-label">TIP</div>
   <p>recall manifest assembles all four pipeline schema layers into one payload. Language schema is always inlined. Pass --plugin to populate the component list. Use --layer to inspect a single layer.</p>
 </div>
-  <h3>recall diff — semantic AST diff</h3>
+  </div>
+</section>
+    <section id="diff" class="padding-medium">
+  <div class="container layout-stack">
+  <div class="recall-label">CLI</div>
+  <h2 class="style-mono">recall diff</h2>
+  <p>recall diff performs a semantic AST diff between two .rcl sources — not a text diff. Compares DATA DIVISION fields (added, removed, PIC and value changes), PROCEDURE DIVISION statements, and IDENTIFICATION metadata. Supports two-file comparison and git revision syntax. Use --suggest-audit to generate a CHANGE-LOG entry from the diff output.</p>
   <div class="code-block-wrap">
   <div class="code-block-header">
     <div class="code-block-dots"><span></span><span></span><span></span></div>

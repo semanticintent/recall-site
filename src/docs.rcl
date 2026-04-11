@@ -984,24 +984,48 @@ PROCEDURE DIVISION.
             DISPLAY CALLOUT "recall expand calls the Anthropic API with a structured payload — intent, DATA DIVISION fields, COMMENT annotations, palette, and component registry. The expanded source is validated by the full compiler pipeline before writing. Requires ANTHROPIC_API_KEY."
                WITH TYPE NOTE.
 
-            DISPLAY HEADING-3 "recall crd — validate Common Record Description".
+         STOP SECTION.
+
+         * ── CRD ─────────────────────────────────────────────
+         DISPLAY SECTION ID "crd"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "CLI".
+            DISPLAY HEADING-2 "recall crd"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH CRD-BODY.
             DISPLAY CODE-BLOCK CRD-EX
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall crd validates field agreement across three pipeline layers — brief JSON, DATA DIVISION, and inputSchema. Four diagnostic codes: CRD-001 (unknown field), CRD-002 (missing field), CRD-003 (truncation), CRD-004 (cardinality mismatch). Use --strict in CI."
                WITH TYPE NOTE.
+         STOP SECTION.
 
-            DISPLAY HEADING-3 "recall manifest — unified AI entry point".
+         * ── Manifest ─────────────────────────────────────────
+         DISPLAY SECTION ID "manifest"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "CLI".
+            DISPLAY HEADING-2 "recall manifest"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH MANIFEST-BODY.
             DISPLAY CODE-BLOCK MANIFEST-EX
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall manifest assembles all four pipeline schema layers into one payload. Language schema is always inlined. Pass --plugin to populate the component list. Use --layer to inspect a single layer."
                WITH TYPE TIP.
+         STOP SECTION.
 
-            DISPLAY HEADING-3 "recall diff — semantic AST diff".
+         * ── Diff ─────────────────────────────────────────────
+         DISPLAY SECTION ID "diff"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "CLI".
+            DISPLAY HEADING-2 "recall diff"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH DIFF-BODY.
             DISPLAY CODE-BLOCK DIFF-EX
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall diff compares at the AST level — field renames, PIC type changes, VALUE changes, and added or removed DISPLAY statements are all individually reported. --suggest-audit prints a ready-made CHANGE-LOG entry."
                WITH TYPE NOTE.
-
             DISPLAY HEADING-3 "recall audit — print AUDIT DIVISION history".
             DISPLAY CODE-BLOCK AUDIT-CMD-EX
                WITH LANGUAGE "bash".
