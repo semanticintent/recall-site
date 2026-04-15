@@ -141,6 +141,7 @@ nav { padding: 16px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; b
   <button class="preset-btn" data-preset="stat-grid">STAT-GRID</button>
   <button class="preset-btn" data-preset="card-list">CARD-LIST</button>
   <button class="preset-btn" data-preset="with-intent">WITH INTENT</button>
+  <button class="preset-btn" data-preset="case-study">CASE STUDY</button>
 </div>
 
 <div class="workspace">
@@ -485,6 +486,116 @@ PROCEDURE DIVISION.
       DISPLAY STAT-GRID
          WITH INTENT "Display the 4 performance stats in a 4-column grid, then a CTA button below."
          WITH DATA STATS, CTA-TEXT, CTA-HREF.
+
+   STOP RUN.`,
+
+  'case-study': `IDENTIFICATION DIVISION.
+   PROGRAM-ID.   AI-ADOPTION-Q1.
+   PAGE-TITLE.   "AI Integration Report — Q1 2026".
+   AUTHOR.       Research & Intelligence.
+   DATE-WRITTEN. 2026-04-14.
+   DESCRIPTION.  "Quarterly analysis of AI tool adoption across professional services.".
+
+ENVIRONMENT DIVISION.
+   CONFIGURATION SECTION.
+      VIEWPORT   RESPONSIVE.
+      COLOR-MODE LIGHT.
+   PALETTE SECTION.
+      COLOR-BG     #fafaf8.
+      COLOR-TEXT   #1a1110.
+      COLOR-MUTED  #6b7785.
+      COLOR-ACCENT #0d7377.
+      COLOR-BORDER #e2dfd8.
+   FONT SECTION.
+      FONT-PRIMARY   IBM Plex Mono.
+      FONT-SECONDARY Inter.
+
+DATA DIVISION.
+   WORKING-STORAGE SECTION.
+      01 REPORT-CATEGORY  PIC X(30)  VALUE "Quarterly Intelligence".
+      01 REPORT-TITLE     PIC X(60)  VALUE "AI Integration Report — Q1 2026".
+      01 REPORT-SUBTITLE  PIC X(200) VALUE "How professional services firms are integrating AI into client workflows — and where the productivity gap is widening.".
+      01 EXEC-SUMMARY     PIC X(480) VALUE "AI adoption in professional services accelerated in Q1 2026. Firms that structured their AI use — defined prompts, review protocols, output standards — reported a 34% reduction in time-to-delivery with no measurable quality loss. The gap between structured and ad-hoc adopters widened for the third consecutive quarter.".
+      01 FINDING-A-HEAD   PIC X(60)  VALUE "Document review leads on efficiency gains".
+      01 FINDING-A-BODY   PIC X(400) VALUE "Firms using AI-assisted review reported 40% fewer associate hours per matter. Senior review remained unchanged — AI compressed drafting and initial review, not judgment. Error rates were flat or marginally improved when AI output was reviewed by a senior associate.".
+      01 FINDING-B-HEAD   PIC X(60)  VALUE "Client deliverables remain contested".
+      01 FINDING-B-BODY   PIC X(400) VALUE "Partners cited quality consistency as the primary concern with client-facing AI output. Associates treated AI output as a starting point. Firms that defined clear review gates before delivery saw client satisfaction scores 22% above firms that did not.".
+      01 KEY-CALLOUT      PIC X(220) VALUE "Firms with structured AI protocols outperformed ad-hoc adopters by 2.3x on time savings and 1.8x on client satisfaction scores.".
+      01 FINDING-C-HEAD   PIC X(60)  VALUE "Protocol quality predicts outcome quality".
+      01 FINDING-C-BODY   PIC X(400) VALUE "The single strongest predictor of AI productivity gain was not the tool — it was the protocol. Firms with documented prompt libraries, defined output formats, and mandatory review steps outperformed those relying on individual discretion by every measured metric.".
+      01 METHODOLOGY-NOTE PIC X(440) VALUE "Analysis draws on survey data from 142 professional services firms (10-500 fee earners), conducted February-March 2026. Firms were categorised as structured adopters (documented AI protocols in active use) or ad-hoc adopters (AI use without formalised process). All figures are self-reported.".
+
+   ITEMS SECTION.
+      01 KEY-METRICS.
+         05 KM1.
+            10 STAT-VALUE PIC X(10) VALUE "34%".
+            10 STAT-LABEL PIC X(40) VALUE "Reduction in time-to-delivery".
+         05 KM2.
+            10 STAT-VALUE PIC X(10) VALUE "2.3x".
+            10 STAT-LABEL PIC X(40) VALUE "Structured vs. ad-hoc productivity".
+         05 KM3.
+            10 STAT-VALUE PIC X(10) VALUE "78%".
+            10 STAT-LABEL PIC X(40) VALUE "Plan to expand AI use in Q2".
+         05 KM4.
+            10 STAT-VALUE PIC X(10) VALUE "142".
+            10 STAT-LABEL PIC X(40) VALUE "Firms surveyed, Feb-Mar 2026".
+
+PROCEDURE DIVISION.
+   RENDER-HEADER.
+      DISPLAY SECTION ID "header"
+         WITH LAYOUT CENTERED
+         WITH PADDING MEDIUM.
+         DISPLAY LABEL REPORT-CATEGORY.
+         DISPLAY HEADING-1 REPORT-TITLE
+            WITH STYLE SANS.
+         DISPLAY PARAGRAPH REPORT-SUBTITLE.
+      STOP SECTION.
+
+   RENDER-METRICS.
+      DISPLAY SECTION ID "metrics"
+         WITH LAYOUT CENTERED
+         WITH PADDING SMALL.
+         DISPLAY STAT-GRID KEY-METRICS
+            WITH COLUMNS 4.
+      STOP SECTION.
+
+   RENDER-SUMMARY.
+      DISPLAY SECTION ID "summary"
+         WITH LAYOUT CENTERED
+         WITH PADDING MEDIUM.
+         DISPLAY HEADING-2 "Executive Summary"
+            WITH STYLE SANS.
+         DISPLAY PARAGRAPH EXEC-SUMMARY.
+      STOP SECTION.
+
+   RENDER-FINDINGS.
+      DISPLAY SECTION ID "findings"
+         WITH LAYOUT CENTERED
+         WITH PADDING MEDIUM.
+         DISPLAY HEADING-2 "Key Findings"
+            WITH STYLE SANS.
+         DISPLAY HEADING-3 FINDING-A-HEAD
+            WITH STYLE SANS.
+         DISPLAY PARAGRAPH FINDING-A-BODY.
+         DISPLAY HEADING-3 FINDING-B-HEAD
+            WITH STYLE SANS.
+         DISPLAY PARAGRAPH FINDING-B-BODY.
+         DISPLAY CALLOUT KEY-CALLOUT
+            WITH TYPE NOTE.
+         DISPLAY HEADING-3 FINDING-C-HEAD
+            WITH STYLE SANS.
+         DISPLAY PARAGRAPH FINDING-C-BODY.
+      STOP SECTION.
+
+   RENDER-METHODOLOGY.
+      DISPLAY SECTION ID "methodology"
+         WITH LAYOUT CENTERED
+         WITH PADDING SMALL.
+         DISPLAY DIVIDER.
+         DISPLAY HEADING-3 "Methodology"
+            WITH STYLE SANS.
+         DISPLAY PARAGRAPH METHODOLOGY-NOTE.
+      STOP SECTION.
 
    STOP RUN.`
 }
