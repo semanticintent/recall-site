@@ -25,6 +25,7 @@ DATA DIVISION.
       01 STRICT-BODY     PIC X(250) VALUE "Strict mode promotes all warnings to errors — zero tolerance for CI pipelines. Machine-readable JSON output includes source lines and caret strings so editor integrations and AI tools can render diagnostics without parsing ANSI sequences.".
       01 CLI-BODY        PIC X(280) VALUE "The RECALL CLI provides commands for compilation, validation, scaffolding, auto-fix, history diffing, and introspection. All commands accept `.rcl` files. Copybooks (`.rcpy`) are resolved automatically during compilation.".
       01 LIB-BODY        PIC X(280) VALUE "@semanticintent/recall-ui is the standard component library. Install once and use `recall scaffold` to generate a working .rcl from any component — or COPY FROM its `.rcpy` files directly. Includes the dark theme, nav, hero, stat-section, card-section, and footer.".
+      01 RUNE-BODY       PIC X(300) VALUE "RECALL's intent model connects to Rune Protocol — a four-sigil reactive binding grammar where ? is a first-class, machine-readable annotation with no runtime effect. WITH INTENT clauses and COMMENT-annotated DATA DIVISION fields are RECALL's dialect of the ? rune.".
 
       01 DATA-COPY-BODY  PIC X(330) VALUE "DATA COPY brings shared field definitions from .rcpy copybooks into the DATA DIVISION at compile time. COPY FROM appears before WORKING-STORAGE SECTION. Fields are inlined as if declared locally — fully typed, validated, and visible to all diagnostic passes. Circular dependencies and field name collisions are compile errors.".
 
@@ -653,6 +654,8 @@ END HEREDOC.
             10 GROUP-LABEL     PIC X(30) VALUE "ECOSYSTEM".
             10 NAV-LINK-1      PIC X(30) VALUE "Component Library".
             10 NAV-LINK-1-HREF PIC X(80) VALUE "#component-library".
+            10 NAV-LINK-2      PIC X(30) VALUE "Rune Protocol".
+            10 NAV-LINK-2-HREF PIC X(80) VALUE "#rune-protocol".
          05 NAV-SECTION-6.
             10 GROUP-LABEL     PIC X(30) VALUE "PROJECT".
             10 NAV-LINK-1      PIC X(30) VALUE "GitHub".
@@ -862,6 +865,8 @@ PROCEDURE DIVISION.
                WITH TYPE NOTE.
             DISPLAY CALLOUT "Run `recall expand --dry-run` to inspect the JSON payload the compositor will receive without making an API call."
                WITH TYPE TIP.
+            DISPLAY CALLOUT "WITH INTENT is RECALL's dialect of the ? (intent) rune from Rune Protocol — structured intent that is machine-readable, travels with source, and carries no runtime effect."
+               WITH TYPE NOTE.
          STOP SECTION.
 
          * ── AUDIT DIVISION ───────────────────────────────────
@@ -1031,6 +1036,18 @@ PROCEDURE DIVISION.
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall audit reads the AUDIT DIVISION from a .rcl source and prints the full provenance log. --since filters by date. --format json outputs machine-readable entries."
                WITH TYPE NOTE.
+         STOP SECTION.
+
+         * ── Rune Protocol ────────────────────────────────────
+         DISPLAY SECTION ID "rune-protocol"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "ECOSYSTEM".
+            DISPLAY HEADING-2 "Rune Protocol"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH RUNE-BODY.
+            DISPLAY LINK "rune.semanticintent.dev"
+               WITH HREF "https://rune.semanticintent.dev".
          STOP SECTION.
 
          * ── Component Library ────────────────────────────────
