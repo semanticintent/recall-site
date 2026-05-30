@@ -213,6 +213,24 @@ recall audit page.rcl --since 2026-04-08
 recall audit page.rcl --format json
 END HEREDOC.
 
+      01 SERVE-BODY      PIC X(300) VALUE "recall serve watches .rcl and .rcpy files and serves compiled HTML with hot reload. On each save the compiler runs, and every connected browser tab reloads automatically via Server-Sent Events. Single-file mode serves one page. Directory mode compiles all .rcl files and adds an index page.".
+
+      01 SERVE-EX        PIC X(180) VALUE HEREDOC.
+recall serve page.rcl
+recall serve page.rcl --port 8080
+recall serve src/
+recall serve src/ --port 3000
+END HEREDOC.
+
+      01 VALIDATE-BODY   PIC X(310) VALUE "recall validate verifies a compiled RECALL artifact matches its own embedded source. Every file produced by recall compile embeds its .rcl source in a structured HTML comment. recall validate extracts that source, recompiles it, and compares the output. Supports local files and live URLs.".
+
+      01 VALIDATE-EX     PIC X(260) VALUE HEREDOC.
+recall validate page.html
+recall validate https://recall.semanticintent.dev
+recall validate page.html --format json
+recall validate page.html --quiet
+END HEREDOC.
+
       01 DATA-COPY-EX    PIC X(200) VALUE HEREDOC.
 DATA DIVISION.
    COPY FROM shared/nav-fields.rcpy.
@@ -650,12 +668,18 @@ END HEREDOC.
             10 NAV-LINK-3-HREF PIC X(80) VALUE "#manifest".
             10 NAV-LINK-4      PIC X(30) VALUE "Diff".
             10 NAV-LINK-4-HREF PIC X(80) VALUE "#diff".
+            10 NAV-LINK-5      PIC X(30) VALUE "Serve".
+            10 NAV-LINK-5-HREF PIC X(80) VALUE "#serve".
+            10 NAV-LINK-6      PIC X(30) VALUE "Validate".
+            10 NAV-LINK-6-HREF PIC X(80) VALUE "#validate".
          05 NAV-SECTION-5.
             10 GROUP-LABEL     PIC X(30) VALUE "ECOSYSTEM".
             10 NAV-LINK-1      PIC X(30) VALUE "Component Library".
             10 NAV-LINK-1-HREF PIC X(80) VALUE "#component-library".
             10 NAV-LINK-2      PIC X(30) VALUE "Rune Protocol".
             10 NAV-LINK-2-HREF PIC X(80) VALUE "#rune-protocol".
+            10 NAV-LINK-3      PIC X(30) VALUE "VS Code".
+            10 NAV-LINK-3-HREF PIC X(82) VALUE "https://marketplace.visualstudio.com/items?itemName=semanticintent.recall-language".
          05 NAV-SECTION-6.
             10 GROUP-LABEL     PIC X(30) VALUE "PROJECT".
             10 NAV-LINK-1      PIC X(30) VALUE "GitHub".
@@ -989,6 +1013,18 @@ PROCEDURE DIVISION.
             DISPLAY CALLOUT "recall expand calls the Anthropic API with a structured payload — intent, DATA DIVISION fields, COMMENT annotations, palette, and component registry. The expanded source is validated by the full compiler pipeline before writing. Requires ANTHROPIC_API_KEY."
                WITH TYPE NOTE.
 
+            DISPLAY HEADING-3 "recall serve — dev server with hot reload".
+            DISPLAY CODE-BLOCK SERVE-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall serve compiles on start, then watches for .rcl and .rcpy changes. Every connected browser tab reloads automatically via SSE. Directory mode serves all .rcl files with an index. Default port 4321."
+               WITH TYPE TIP.
+
+            DISPLAY HEADING-3 "recall validate — artifact self-validation".
+            DISPLAY CODE-BLOCK VALIDATE-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "recall validate extracts the embedded .rcl source from a compiled HTML artifact, recompiles it, and verifies the output matches. VALID-001 (mismatch), VALID-002 (no embedded source), VALID-003 (recompile failed). Use --quiet for CI exit-code-only mode."
+               WITH TYPE NOTE.
+
          STOP SECTION.
 
          * ── CRD ─────────────────────────────────────────────
@@ -1036,6 +1072,38 @@ PROCEDURE DIVISION.
                WITH LANGUAGE "bash".
             DISPLAY CALLOUT "recall audit reads the AUDIT DIVISION from a .rcl source and prints the full provenance log. --since filters by date. --format json outputs machine-readable entries."
                WITH TYPE NOTE.
+         STOP SECTION.
+
+         * ── Serve ───────────────────────────────────────────────
+         DISPLAY SECTION ID "serve"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "CLI".
+            DISPLAY HEADING-2 "recall serve"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH SERVE-BODY.
+            DISPLAY CODE-BLOCK SERVE-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "Hot reload is delivered via Server-Sent Events — no WebSocket required. The injected script reconnects automatically if the server restarts. Copybook changes (.rcpy) trigger a recompile of all .rcl files in the same directory."
+               WITH TYPE TIP.
+            DISPLAY CALLOUT "recall serve is a dev tool only. For production, use recall build to compile all pages to a static output directory."
+               WITH TYPE NOTE.
+         STOP SECTION.
+
+         * ── Validate ─────────────────────────────────────────────
+         DISPLAY SECTION ID "validate"
+            WITH LAYOUT STACK
+            WITH PADDING MEDIUM.
+            DISPLAY LABEL "CLI".
+            DISPLAY HEADING-2 "recall validate"
+               WITH STYLE MONO.
+            DISPLAY PARAGRAPH VALIDATE-BODY.
+            DISPLAY CODE-BLOCK VALIDATE-EX
+               WITH LANGUAGE "bash".
+            DISPLAY CALLOUT "When the .rcl source file exists alongside the .html, recall validate uses it — COPY FROM and LOAD FROM are resolved correctly. For URL validation or standalone .html files, the embedded source is recompiled in-memory. Files using COPY FROM should be validated locally with the source present for a definitive result."
+               WITH TYPE NOTE.
+            DISPLAY CALLOUT "VALID-001 fires when the HTML body has been edited after compilation but the embedded source comment was not updated. It will not fire if both sides were updated consistently — use recall compile to regenerate a clean artifact."
+               WITH TYPE TIP.
          STOP SECTION.
 
          * ── Rune Protocol ────────────────────────────────────
